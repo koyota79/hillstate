@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MainHomeDao">
+    <select id="selectShopList">
+        select shop_id ,shop_nm from h_shop_mstr_test 
+        where shop_id = case when  %(id)s = '2001' then   %(id)s else shop_id end
+    </select>
+
+    <select id="selectShopSlideList">
+        SELECT a.shop_id ,a.shop_nm ,b.main_img_nm ,b.sub_img_nm
+          FROM h_shop_mstr a
+         INNER JOIN h_shop_slide b
+            ON a.shop_id = b.shop_id
+         WHERE a.use_yn = 'Y' and b.use_yn = 'Y' and 
+            CASE WHEN %(main_show_yn)s = 'Y' THEN b.main_show_yn = 'Y' ELSE b.sub_show_yn = 'Y'  END
+    </select>
+</mapper>

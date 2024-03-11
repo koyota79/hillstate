@@ -1,0 +1,61 @@
+node.js  설치후
+
+npm install -g @vue/cli
+
+npm ls -g 확인
+
+vue create frontend 에 뷰 설치
+
+vue3 선택
+Please pick a preset: Default ([Vue 3] babel, eslint)
+
+
+cd hillstate
+npm run serve
+
+frontend 에 라우터 설치 
+npm i --save vue-router
+
+아코디언 메뉴 사용안했음
+npm install vue-stacked-ui
+
+
+메인 이미지 슬라이드 플러그
+npm i vueperslides
+
+ajax 설치
+npm install axios
+
+
+
+================파이썬=====================
+
+윈도우 파이썬 설치
+
+vscode 파이썬 확장프로그램 설치
+환경변수 세팅
+환경path ,시스템 path  등록
+backend  폴더에서  pip 확인
+비번 hillstate123
+
+user : hillstate
+pw : hillstate123
+
+가상환경 셋팅  backend  (프로젝트별로 의존성 충돌 방지)
+
+ python -m venv .venv
+.venv\Scripts\activate  가상환경 활성화  deactivate 비활성화
+
+
+pip install psycopg2
+
+pip install pandas
+
+pip install flask
+pip install flask-restx
+
+xml mybatis
+pip install mybatis-mapper2sql
+
+access-control-allow-origin 문제
+pip install -U flask-cors
