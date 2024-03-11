@@ -42,10 +42,7 @@ vscode 파이썬 확장프로그램 설치
 환경변수 세팅
 환경path ,시스템 path  등록
 backend  폴더에서  pip 확인
-비번 hillstate123
 
-user : hillstate
-pw : hillstate123
 
 가상환경 셋팅  backend  (프로젝트별로 의존성 충돌 방지)
 
