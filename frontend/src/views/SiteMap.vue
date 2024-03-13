@@ -1,21 +1,29 @@
 <template>
     <div class="site_map"> site_map 
         <div v-bind:style="{ rotate: v_rotate + 'deg', transition: v_transition }">
-            <img width="370px" height="350px" :src="v_siteMapUrl" usemap="#image-map"/>
-            <div  class="circular" width="370px" height="350px" :style="{backgroundImage :'url('+ v_siteMapUrl + ')' }" usemap="image-map">
+            <div  class="circular" width="370px" height="350px" :style="{backgroundImage :'url('+ v_siteMapUrl + ')' }">
                 <div class="backdoor" v-bind:style="{ rotate: v_text_rotate + 'deg', transition: v_transition }" >후문</div>
                 <div class="frontdoor" v-bind:style="{ rotate: v_text_rotate + 'deg', transition: v_transition }" >정문</div>
-            </div>
-            <map name="image-map">
-                <area target="_blank" alt="" title="" href="" coords="136,282,68,222" shape="rect">
-                <area target="" alt="" title="" href="" coords="78,142,132,177" shape="rect">
-            </map>           
+                <div>
+                    <img :src="v_markerImg" ref="2001" v-if="v_show"
+                    v-bind:style="{position : 'absolute' ,left:v_left + 'px' ,top:v_top + 'px' ,width:'25px'
+                        , rotate: v_text_rotate + 'deg', transition: v_transition
+                    }"/>
+                </div>
+
+            
+            </div>         
         </div>  
         <div class="arrow">
         </div>
         <div class="btn">
             <button @click="fnDoesRotate('L')">left</button><button @click="fnDoesRotate('R')">right</button>
         </div> 
+        <div style="margin-top:30px;">
+            <button @click="fnShopShow('2001')">스타벅스</button>
+            <button @click="fnShopShow('2003')">폴바셋</button>
+            <button @click="fnShopShow('2006')">시스템옴므</button>
+        </div>
     </div> 
 </template>
  
@@ -26,9 +34,20 @@
             return {
                 v_rotate : 0 ,
                 v_text_rotate : 0 ,
+                v_show       : false ,
                 v_transition : 'rotate 1s',
-                v_siteMapUrl : require("../assets/images/site_map_1.jpg")
-            }
+                v_siteMapUrl : require("../assets/images/site_map_2.jpg") ,
+                v_markerImg  : require("../assets/images/marker.jpg"),
+                v_top : "25" ,
+                v_left : "10",
+                v_shopPosition : {
+                    "2001" : {"top" : "25" ,"left" : "10"} ,
+                    "2003" : {"top" : "75" ,"left" : "10"} ,
+                    "2006" : {"top" : "255" ,"left" : "10"} 
+                
+                }
+
+            } 
         },
         methods: {
             fnDoesRotate(type){
@@ -40,6 +59,16 @@
                     this.v_rotate -= 90  
                     this.v_text_rotate += 90 
                 }                                 
+            },
+            fnShopShow(shopId){
+                console.log(this.v_shopPosition)
+                if(this.v_show){
+                    this.v_show = false
+                }else{
+                    this.v_show = true
+                    this.v_top = this.v_shopPosition[shopId]["top"]
+                    this.left = this.v_shopPosition[shopId]["left"]                    
+                }
             }
         }
         
@@ -70,8 +99,9 @@
         transition: rotate 1s;
     } */
     .backdoor{
-        display: inline-block;
-        /* transform : rotatex(90deg); */
+       /*  display: inline-block;
+        transform : rotatex(90deg); */
+        border: 3px 
     }
     .frontdoor{
         display: inline-block;
