@@ -1,0 +1,70 @@
+-- Table: public.h_shop_mstr
+
+-- DROP TABLE IF EXISTS public.h_shop_mstr;
+
+CREATE TABLE IF NOT EXISTS public.h_shop_mstr
+(
+    shop_id character varying(5) COLLATE pg_catalog."default" NOT NULL,
+    shop_nm character varying(255) COLLATE pg_catalog."default",
+    open_time character varying(5) COLLATE pg_catalog."default",
+    close_time character varying(5) COLLATE pg_catalog."default",
+    tel_no character varying(12) COLLATE pg_catalog."default",
+    "position" character varying(5) COLLATE pg_catalog."default",
+    use_yn character varying(1) COLLATE pg_catalog."default" DEFAULT 'Y'::character varying,
+    CONSTRAINT h_shop_mstr_pkey PRIMARY KEY (shop_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.h_shop_mstr
+    OWNER to hillstate;
+
+COMMENT ON TABLE public.h_shop_mstr
+    IS '상점 마스터';
+
+
+
+    -- Table: public.h_shop_mstr_test
+
+-- DROP TABLE IF EXISTS public.h_shop_mstr_test;
+
+CREATE TABLE IF NOT EXISTS public.h_shop_mstr_test
+(
+    shop_id character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    shop_nm character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT h_shop_mstr_test_pkey PRIMARY KEY (shop_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.h_shop_mstr_test
+    OWNER to hillstate;
+
+
+
+    -- Table: public.h_shop_slide
+
+-- DROP TABLE IF EXISTS public.h_shop_slide;
+
+CREATE TABLE IF NOT EXISTS public.h_shop_slide
+(
+    shop_id character varying(5) COLLATE pg_catalog."default" NOT NULL,
+    main_show_yn character varying(1) COLLATE pg_catalog."default" DEFAULT 'N'::character varying,
+    main_apply_dt character varying(8) COLLATE pg_catalog."default",
+    sub_show_yn character varying(1) COLLATE pg_catalog."default" DEFAULT 'N'::character varying,
+    sub_apply_dt character varying(8) COLLATE pg_catalog."default",
+    use_yn character varying(1) COLLATE pg_catalog."default" DEFAULT 'Y'::character varying,
+    main_img_id character varying(15) COLLATE pg_catalog."default",
+    main_img_nm character varying(255) COLLATE pg_catalog."default",
+    sub_img_id character varying(15) COLLATE pg_catalog."default",
+    sub_img_nm character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT h_shop_slide_pkey PRIMARY KEY (shop_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.h_shop_slide
+    OWNER to hillstate;
+
+COMMENT ON TABLE public.h_shop_slide
+    IS '이미지 슬라이드';
