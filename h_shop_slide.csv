@@ -1,0 +1,5 @@
+"shop_id","main_show_yn","main_apply_dt","sub_show_yn","sub_apply_dt","use_yn","main_img_id","main_img_nm","sub_img_id","sub_img_nm"
+"2001","Y","30","Y","365","Y",NULL,"main_1",NULL,"main_1"
+"2002","N",NULL,"Y","365","Y",NULL,NULL,NULL,"main_2"
+"3001","Y","30","Y","365","Y",NULL,"main_2",NULL,"main_2"
+"B1001","Y","30","Y","365","Y",NULL,"main_3",NULL,"main_3"
