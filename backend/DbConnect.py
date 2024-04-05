@@ -1,20 +1,38 @@
+
 import psycopg2
 from config import configObj 
 import pandas as pd
 import json
-from service.dao.QueryMapper import QueryMapper
+#from service.dao.QueryMapper import QueryMapper
 import mybatis_mapper2sql
-from psycopg2.extras import RealDictCursor
+from psycopg2.extras import LoggingConnection
+#from psycopg2.extras import RealDictCursor
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 class getConn():
     def __init__(self):
-        self.db        = psycopg2.connect(
-             host      = configObj.DATABASE_CONFIG['DATABASE_HOST'], 
-            dbname     = configObj.DATABASE_CONFIG['DATABASE_DB'],
-            user       = configObj.DATABASE_CONFIG['DATABASE_USER'],
-            password   = configObj.DATABASE_CONFIG['DATABASE_PW']
-        )
-        self.cursor = self.db.cursor()
+        db_settings = {
+            "user": configObj.DATABASE_CONFIG['DATABASE_USER'],
+            "password": configObj.DATABASE_CONFIG['DATABASE_PW'],
+            "host": configObj.DATABASE_CONFIG['DATABASE_HOST'],
+            "dbname": configObj.DATABASE_CONFIG['DATABASE_DB']
+        }
+        self.db = psycopg2.connect(connection_factory=LoggingConnection, **db_settings)
+
+        # self.db        = psycopg2.connect(
+        #     host       = configObj.DATABASE_CONFIG['DATABASE_HOST'], 
+        #     dbname     = configObj.DATABASE_CONFIG['DATABASE_DB'],
+        #     user       = configObj.DATABASE_CONFIG['DATABASE_USER'],
+        #     password   = configObj.DATABASE_CONFIG['DATABASE_PW'],
+        
+        #     connection_factory = LoggingConnection
+        # )
+        #self.db.set_client_encoding("UTF8")
+        self.db.initialize(logger)
+        self.cursor = self.db.cursor() 
         self.result = "Y"
 
     def __del__(self):
@@ -23,7 +41,6 @@ class getConn():
         self.cursor.close()
 
     def execute(self,query,args):
-        print(":;execute::" ,args)
         self.cursor.execute(query,args)
         row = self.cursor.fetchall()
         return row
@@ -39,20 +56,20 @@ class getConn():
             print(":::::::::::::::::::params:::::::::::::::::::")
             print("params=",params)
             print(":::::::::::::::::::params:::::::::::::::::::")
-            print("")
-            print("*******************query*******************")
-            print("query=" , query)
-            print("*******************query*******************")
+            # print("")
+            # print("*******************query*******************")
+            # print("query=" , query)
+            # print("*******************query*******************")
             #testObj = {"id":"2002" ,"name":"test"}
             #query = "select shop_id ,shop_nm from h_shop_mstr_test where 1=1 and shop_id =  %(id)s"
             self.cursor.execute(query ,params)
             #columns  = list(self.cursor.description)
             columns = [desc[0] for desc in self.cursor.description]
-            results = [dict(zip(columns, row)) for row in self.cursor.fetchall()]
+            result = [dict(zip(columns, row)) for row in self.cursor.fetchall()]
 
             #result = self.cursor.fetchall()
             print("")
-            print(":::::::::::::::::::result:::::::::::::::::::" , results)
+            print("result=" , result)
             #result = list #json.dumps(list ,ensure_ascii=False)
             
             
@@ -69,9 +86,23 @@ class getConn():
         except Exception as e :
             print("selectList exception" ,e)
 
-        return results
+        return result
+    
 
-    def insert(self ,query):
+
+    def selectOne(self ,params ,query) :
+        try :
+            self.cursor.execute(query ,params)
+            row = self.cursor.fetchone()
+            rowDict = dict(zip([c[0] for c in self.cursor.description], row ))
+            print("result" ,rowDict)
+        except Exception as e :
+            print(" selectOne exception",e)
+
+        return rowDict
+    
+
+    def insert(self ,query) :
         try :
             self.cursor.execute(query)
             self.db.commit()
@@ -99,7 +130,7 @@ class excuteQuery :
     def selectList(self) :
         mapper, xml_raw_text = mybatis_mapper2sql.create_mapper(xml=self.xml)
         sql = mybatis_mapper2sql.get_child_statement(mapper ,self.queryId, reindent=True, strip_comments=False)
-        
+        print("excuteQuery")
         result = getConn().selectList(self.params ,sql)
         return result
  
@@ -108,6 +139,11 @@ class excuteQuery :
         return getConn().insert(query)
 
 
+    def selectOne(self) :
+        mapper, xml_raw_text = mybatis_mapper2sql.create_mapper(xml=self.xml)
+        sql = mybatis_mapper2sql.get_child_statement(mapper ,self.queryId, reindent=True, strip_comments=False)
+        result = getConn().selectOne(self.params ,sql)
+        return result
 
     # conn_string = "host = 'localhost' dbname = 'hillstate' user = 'hillstate' password = 'hillstate123'"
     # conn = psycopg2.connect(conn_string)

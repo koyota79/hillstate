@@ -1,23 +1,31 @@
 
 <template>
-    <div class="main_slide">
+    <div class="main-cont">
+        <img src = "../assets/images/special_map.png"/>
         <main-slide></main-slide>
+        <div class="brand_event">
+            <h3>브랜드 이벤트</h3>
+        </div>
+        <div class="main_img">
+             <img src = "../assets/images/event1.jpg"/>
+        </div>
     </div>
-   <div class="main_img">
-        <img src = "../assets/images/event1.jpg" style="width:352px;height:519px;"/>
+   <div class="footer-cont">
+       <footer-cont></footer-cont>
    </div>
 </template>
 
-
-
 <style>
-.main_img{
-    margin-top : 20px;
-    display : inline-block;
-}   
-.main_slide{
-    margin-top : 60px;
-    width : 350px;
-    display : inline-block;
-}  
+    .main-cont{
+        padding:10px;
+    } 
+    .main-cont img{
+        width:98%;
+    } 
+    .brand_event{
+        padding-top : 20px;
+    }  
+    .footer-cont{
+        width:100%
+    }   
 </style>

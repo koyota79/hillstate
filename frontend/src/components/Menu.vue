@@ -6,9 +6,9 @@
     </svg>
   </div>
   <div class="navbar_menu">
-    <a href="#" @click="fnMovePage($event ,'content')">CONTENT</a>
-    <a href="#" @click="fnMovePage($event ,'site_map')">층별 안내도</a>
-    <a href="#" @click="fnMovePage($event ,'content')">NEWS</a>
+    <a href="#" @click="fnLocationPage($event ,'/location')">위치/주차</a>
+    <a href="#" @click="fnMovePage($event ,'site_map')" >층별 안내도</a>
+    <a href="#" @click="fnMovePage($event ,'event')">이벤트</a>
     <a href="#" @click="fnMovePage($event ,'content')">CONTACT</a>
     <div class="navbar_burger_back" @click="fnNavbarClose($event)">
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
@@ -19,60 +19,71 @@
 </template>
 <script>
 import { ref } from 'vue';
+
 const navbarMenu    = ref(0);
 const navbarOverlay = ref(1); 
 
 export default {
+  created () {
+    this.$Store.commit('setFloor' , 2)
+  },
   data() {},
-  methods: {
-  	fnMovePage(event ,key) {
-    	console.log(key)
-      
-      let p_url   = ""
-      let p_setData = {};
-      p_setData.id = "";
-      p_setData.name = "test";
-      
-      switch (key) {
-        case "site_map":
-          p_url = "/site_map"
-          break;
-      
-        default:
-          p_url = "/content"
-          break;
-      }
+    methods: {
+      fnMovePage(event ,key) {
+        //console.log(key)
+        
+        let p_url   = ""
+        let p_setData = {};
+        p_setData.id = "";
+        p_setData.name = "test";
 
-      this.$Axios.post(p_url, p_setData)
-      .then((response) => {
-        console.log(response);
-        console.log(response.data);
-        // 이름을 가지는 라우트
-        //router.push({ name: 'Content', params: { userId: 123 }})
+        switch (key) {
+          case "site_map":
+            p_url = "api/site_map"
+            break;   
+          case "event":
+            p_url = "/event"
+            break;  
+          default:
+            p_url = "/"
+            break;
+        }
 
-      }).catch((error) => {
-        console.log(error);
-      }).finally(() => {
-        console.log("항상 마지막에 실행");
+        this.$Axios.get(p_url, p_setData)
+        .then((response) => {
+          console.log('response' , response);
+          console.log(response.data);
+          // 이름을 가지는 라우트
+          //router.push({ name: 'Content', params: { userId: 123 }})
+
+        }).catch((error) => {
+          console.log(error);
+        }).finally(() => {
+          console.log("항상 마지막에 실행");
+          this.fnNavbarClose(event)
+          this.$router.push({ path: key })
+        });
+      },
+      fnLocationPage(event ,key) {
+        console.log('event' ,event ,key )
+        this.$router.push({ name: 'Location' })
         this.fnNavbarClose(event)
-        this.$router.push({ path: p_url })
-      });
-    },
-    fnNavbarOpen(event) {
-      navbarMenu.value = document.querySelector('.navbar_menu');
-      navbarOverlay.value = document.querySelector('.navbar_overlay');
-      if(event){
-        navbarMenu.value.classList.toggle('active');
-        navbarOverlay.value.classList.toggle('active');
+      },
+      fnNavbarOpen(event) {
+        navbarMenu.value = document.querySelector('.navbar_menu');
+        navbarOverlay.value = document.querySelector('.navbar_overlay');
+        if(event){
+          navbarMenu.value.classList.toggle('active');
+          navbarOverlay.value.classList.toggle('active');
+        }
+      },
+      fnNavbarClose(event){
+        if(event){
+          navbarMenu.value.classList.remove('active');
+          navbarOverlay.value.classList.remove('active'); 
+        }
       }
-    },
-    fnNavbarClose(event){
-      if(event){
-        navbarMenu.value.classList.remove('active');
-        navbarOverlay.value.classList.remove('active'); 
-    }
-    }
-  }
+    }//end method
 }
 </script>
 <!-- 
@@ -116,8 +127,8 @@ export default {
 }
 
 .navbar_burger {
-  position: fixed;
-  top: 1rem;
+  position: absolute;
+  top: 1.5rem;
   right: 1rem;
   cursor: pointer;
   color: #000;

@@ -12,7 +12,9 @@ class QueryMapper(object ) :
    def __new__(self ,*args): 
       print("::QueryMapper::" ,args )
       base_dir = os.path.abspath(os.path.dirname(__file__))
+      print("base_dir",base_dir)
       xml = os.path.join(base_dir, args[0])
+      print("xml",xml)
       return xml
     
        

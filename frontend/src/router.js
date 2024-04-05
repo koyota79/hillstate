@@ -2,10 +2,14 @@ import { createWebHistory, createRouter } from 'vue-router';
 
 import About from './views/About'
 import Main from './views/Main'
-import Header from './views/Header'
+//import Header from './views/Header'
 import ErrorPage from './views/ErrorPage'
 import Content from './views/Content'
 import SiteMap from './views/SiteMap'
+import ShopDetail from './views/ShopDetail'
+import Event from './views/Event'
+import Location from './views/Location.vue'
+
 
 const routes = [
       {
@@ -16,23 +20,41 @@ const routes = [
             {
               path: '/',
               name: 'Main',
-              component: ()=> import('./views/Main.vue'),
+              component: ()=> Main
+            },
+            { 
+              path: '/location',
+              name: 'Location',
+              component: ()=> Location
             },
             { 
               path: '/content',
               name: 'Content',
-              component: ()=> import('./views/Content.vue'),
+              component: ()=> Content
             },
             { 
               path: '/site_map',
               name: 'Site_map',
-              component: ()=> import('./views/SiteMap.vue'),
-          },
-          // {path: '/notFound', component: ErrorPage },
-          // {
-          //     path: "/:pathMatch(.*)*",
-          //     redirect: "/notFound"
-          //   }            
+              props : true,
+              component: ()=> SiteMap
+            },
+            { 
+              path: '/shop_info/:shop_id',
+              name: 'ShopDetail',
+              props : true,
+              component: ()=> ShopDetail
+            },            
+            { 
+              path: '/event',
+              name: 'Event',
+              component: ()=> Event
+            },
+            
+            {path: '/notFound', component: ErrorPage },
+            {
+              path: "/:pathMatch(.*)*",
+              redirect: "/notFound"
+            }         
         ],
       }
   
@@ -56,5 +78,14 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 });
+
+
+// router.beforeEach(function (to, from, next) {
+//   // to : 이동할 url
+//   // from : 현재 url
+//   // next : to에서 지정한 url로 이동하기 위해 꼭 호출해야 하는 함수
+//   console.log(to , from) 
+//   next()
+// });
 
 export {router}

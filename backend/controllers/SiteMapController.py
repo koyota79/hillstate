@@ -1,21 +1,24 @@
 from flask import request
 from flask_restx import Resource, Api, Namespace
+from service.SiteMapService import SiteMapService
+
 
 
 siteMap = Namespace('siteMap')
+service = SiteMapService()
 
 @siteMap.route('')
 class SiteMap(Resource):
-    def post(self):
-        print(111111111)
-        result =  {"siteMap": "siteMap!"}
-        
-        return result
+    def get(self):
+        retShopData = {}
+        retShopData.result = '사이트맵'
+        return retShopData
     
-@siteMap.route('/list')
+@siteMap.route('/<floor_idx>')
 class SiteMapList(Resource):
-    def post(self):
-        print(2222222)
-        result =  {"siteMap": "list1111!"}
+    def get(self , floor_idx):
+        params = { 'position_idx' :floor_idx}
+        retShopData = {}
+        retShopData['shop_map_list'] = service.getShopMapList(params)
         
-        return result
+        return retShopData

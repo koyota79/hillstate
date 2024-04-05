@@ -28,25 +28,13 @@ class MainHome(Resource):
         self.params = dataObj #(dataObj["id"] ,'test')
         return service.getList(self) 
 
-@mainHome.route('list') 
-class MainHomeList(Resource):
-    def get(self ):
-        
-        print(request.args.get("id") )
-        result =  {"hello": "33333"}
-        
-        return result
-
-
-
 
 @mainHome.route('shop_data/<shop_id>') 
 class MainSlideList(Resource):
     def get(self ,shop_id ):
-        print( shop_id )
+
         retData = {}
         if shop_id == "getMainSlide" : 
-            print("::getMainSlide::")
             retData["main_list"] = service.getMainSlideList("MainSlide")
             retData["sub_list"] = service.getMainSlideList("SubSlide")          
 
@@ -57,6 +45,12 @@ class MainSlideList(Resource):
         # result =  jsonObj["id"]
         return retData    
     
+    def post(self ,shop_id):
+        
+        result =  {"hello": "33333"}
+        print(result )
+        
+        return result
 
 
 

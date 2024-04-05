@@ -32,7 +32,18 @@ npm i vueperslides
 ajax 설치
 npm install axios
 
+npm i swiper
 
+자동완성 기능
+npm i vuejs-auto-complete
+
+npm install vue3-autocomplete
+
+모바일 체크 라이센서 확인
+npm i vue3-mobile-detection
+
+npm install vuex
+https://kyounghwan01.github.io/blog/Vue/vue3/composition-api-vuex/#google_vignette
 
 ================파이썬=====================
 
@@ -40,7 +51,7 @@ npm install axios
 
 vscode 파이썬 확장프로그램 설치
 환경변수 세팅
-환경path ,시스템 path  등록
+환경path ,시스템 path  등록pip
 backend  폴더에서  pip 확인
 
 
@@ -48,9 +59,15 @@ backend  폴더에서  pip 확인
 
  python -m venv .venv
 .venv\Scripts\activate  가상환경 활성화  deactivate 비활성화
+.venv\Scripts\deactivate
+
+python app.py
+
+python -m venv .hillstate
+.hillstate\Scripts\activate
 
 
-pip install psycopg2
+pip install psycopg2-binary
 
 pip install pandas
 
@@ -62,3 +79,17 @@ pip install mybatis-mapper2sql
 
 access-control-allow-origin 문제
 pip install -U flask-cors
+
+python app.py
+
+
+C:\postgresql-15.6-1-windows-x64 --install_runtimes 0
+
+
+인코딩
+pip install unidecode
+
+pip uninstall psycopg2
+
+
+pip install "psycopg[binary]"

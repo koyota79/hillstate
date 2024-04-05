@@ -61,8 +61,8 @@ class MainHomeService :
                 self.params = {"main_show_yn" : "Y"}           
             elif type == "SubSlide" :
                 self.params = {"main_show_yn" : "N"}  
-
             list = excuteQuery.selectList(self)
+ 
         except Exception as e :
             print("service err",e)
             return [] 
