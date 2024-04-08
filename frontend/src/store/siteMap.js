@@ -1,5 +1,5 @@
 export const SiteMap = {
-    state: () => ({ floor: 2 }),
+    state: () => ({ floor: '2' }),
     mutations: {
       setCounter(state, value) {
         state.counter = value;

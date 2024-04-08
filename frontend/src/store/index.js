@@ -8,8 +8,8 @@ const SEARCH_DATA = () =>{
 }
 
 const state = {
-  floor: ['0','1','2','3'] ,
-  idx : 0 ,
+  floor: ['B1','1','2','3'] ,
+  idx : '2' ,
   search : {
     scrollYn : false
   }

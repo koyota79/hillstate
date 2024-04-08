@@ -25,12 +25,17 @@
   /* 반응형 시작 */
   @media all and (max-width:468px){
     #app{ width:100%;}
+    
   }
 
   .container {
-    background-color: rgb(254, 254, 254);
-    width:100%;
+      background-color: rgb(254, 254, 254);
+      width:100%;
+      min-Height: 100vh;
   }
+
+
+
   .clearfix:after {
     clear: both;
     content: " ";

@@ -2,10 +2,10 @@
     <!-- <div class="floor_top"><b>층별 안내</b></div> -->
     <div class="floor_parent">
        <div class="floor_top"><b>층별안내</b></div> 
-       <div class="floor_navi" @click="fnSelectFloor($event ,'0')" :class="{ floor_navi_a : isBtnSelected[0]}"><p>B1</p></div>
-       <div class="floor_navi" @click="fnSelectFloor($event ,'1')" :class="{ floor_navi_a : isBtnSelected[1]}"><p>1F</p></div>
-       <div class="floor_navi" @click="fnSelectFloor($event ,'2')" :class="{ floor_navi_a : isBtnSelected[2]}"><p>2F</p></div>
-       <div class="floor_navi" @click="fnSelectFloor($event ,'3')" :class="{ floor_navi_a : isBtnSelected[3]}"><p>3F</p></div>
+       <div class="floor_navi" @click="fnSelectFloor($event ,'B1')" :class="{ floor_navi_a : isBtnSelected['B1']}"><p>B1</p></div>
+       <div class="floor_navi" @click="fnSelectFloor($event ,'1')" :class="{ floor_navi_a : isBtnSelected['1']}"><p>1F</p></div>
+       <div class="floor_navi" @click="fnSelectFloor($event ,'2')" :class="{ floor_navi_a : isBtnSelected['2']}"><p>2F</p></div>
+       <div class="floor_navi" @click="fnSelectFloor($event ,'3')" :class="{ floor_navi_a : isBtnSelected['3']}"><p>3F</p></div>
     </div>
 </template>
 
@@ -13,8 +13,8 @@
     export default {
         data() {
             return {
-                setFloorIdx : 2 ,
-                isBtnSelected :[false,false,false,false] ,
+                setFloorIdx : '2' ,
+                isBtnSelected :{'B1' : false,'1' : false,'2': false,'3':false} ,
                 items:[
                 {
                     id:1,
@@ -31,7 +31,7 @@
             
         },
         mounted() {
-           console.log('index' , this.$Store.state.idx)
+           //console.log('index' , this.$Store.state.idx)
            this.setFloorIdx = this.$Store.state.idx
            this.isBtnSelected[this.$Store.state.idx] = true
         },    

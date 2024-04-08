@@ -10,8 +10,9 @@ service = SiteMapService()
 @siteMap.route('')
 class SiteMap(Resource):
     def get(self):
+        params = { 'position_idx' : ''}
         retShopData = {}
-        retShopData.result = '사이트맵'
+        retShopData['shop_map_list'] = service.getShopMapList(params)
         return retShopData
     
 @siteMap.route('/<floor_idx>')

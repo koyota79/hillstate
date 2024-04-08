@@ -33,7 +33,7 @@
                     {
                         id : 0 ,
                         title: '가',
-                        shop_list: [{id :0 ,shop_nm : 'TEST'}],
+                        shop_list: [{id :0 ,shop_nm : ''}],
                         isActive : true,
                         offset : {top :  56} ,
                         contentHeight : 65
@@ -69,7 +69,7 @@
         created() {
             console.log("Parent mounted floorIdx" ,this.floorIdx)
             //this.props.floorIdx ='2'
-            console.log(this.floorIdx==undefined?2:this.floorIdx)
+            console.log(this.floorIdx==undefined?'2':this.floorIdx)
             
             //this.fetchData(this.$route)
             let p_url   = "api/site_map/"+this.floorIdx 

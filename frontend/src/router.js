@@ -9,7 +9,7 @@ import SiteMap from './views/SiteMap'
 import ShopDetail from './views/ShopDetail'
 import Event from './views/Event'
 import Location from './views/Location.vue'
-
+import Category from './views/Category.vue'
 
 const routes = [
       {
@@ -49,7 +49,12 @@ const routes = [
               name: 'Event',
               component: ()=> Event
             },
-            
+            { 
+              path: '/category/:id',
+              name: 'Category',
+              props : true,
+              component: ()=> Category
+            },                                    
             {path: '/notFound', component: ErrorPage },
             {
               path: "/:pathMatch(.*)*",

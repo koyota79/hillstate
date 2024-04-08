@@ -1,7 +1,7 @@
 <template>
     <div class="site_map">
         <div class="floor_info">
-            <FloorInfo/> 
+            <FloorInfo></FloorInfo>
         </div>
 
         <div v-bind:style="{ rotate: v_rotate + 'deg', transition: v_transition }">
