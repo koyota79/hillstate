@@ -1,5 +1,6 @@
 import Vuex from 'vuex'
 import { createStore } from "vuex";
+import createPersistedState from 'vuex-persistedstate';
 
 export default createStore({
     state: {
@@ -21,8 +22,11 @@ export default createStore({
       setSearchIcon (state ,isTrue ) {
         state.searchIcon  = isTrue
       }
-    }
+    },
+    plugins : [ createPersistedState({ paths: ["searchIcon"] }) ],
 });
+
+
 
 
 // const SEARCH_DATA = () =>{

@@ -45,7 +45,7 @@
     import { useRoute ,useRouter } from 'vue-router'
     import { useStore } from 'vuex'
     const store = useStore()
- 
+    const route         = useRoute()
 
     const Axios        = inject('Axios')//구역
     let v_shopDetail   = ref({})
@@ -73,10 +73,13 @@
 
     }
     onMounted(async () => {
+        store.commit('setSearchIcon' ,false)
         fetchData()
         console.log( 'mounted iconf' , store)
     })
-
+    watch(route , (newX, newY) => {
+        console.log('::watch:' ,newX , newY)
+    })
 //     import { Swiper, SwiperSlide } from 'swiper/vue';
 
 //     // Import Swiper styles

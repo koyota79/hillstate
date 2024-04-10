@@ -2,7 +2,7 @@
   <div class ="header">    
     <div class="search">
         <img v-if="v_classActive" width= "25px" src = "../assets/images/btn_cont.png"  @click="fnShowSearch($event)" />
-        <div v-else class="arrow-prev" :class="v_classActive !=v_classActive" @click="fnRouterBack()"></div>
+        <div v-else class="arrow-prev"  @click="fnRouterBack()"></div>
     </div>    
     <top-logo  @click="fnGoMovePage($event)" ></top-logo>
     <search  ref="v_showSearch"></search>
@@ -16,7 +16,7 @@
   import { useRoute ,useRouter } from 'vue-router'
   import { useStore } from 'vuex'
   const store = useStore()
-  // store.commit('searchIcon')
+
   let v_classActive = store.state.searchIcon
   const router = useRouter()
   
@@ -43,9 +43,9 @@
     router.go(-1)
   }
 
-  onMounted(async () => {
-    // v_classActive = store.state.searchIcon
-  
+  onMounted(() => {
+    v_classActive = store.state.searchIcon
+    console.log('store.state.searchIcon22222' , v_classActive)
   });
 
 </script>

@@ -42,6 +42,11 @@ npm install vue3-autocomplete
 모바일 체크 라이센서 확인
 npm i vue3-mobile-detection
 
+
+vuex 새로고침 문제
+
+npm install --save vuex-persistedstate
+
 npm install vuex
 https://kyounghwan01.github.io/blog/Vue/vue3/composition-api-vuex/#google_vignette
 
