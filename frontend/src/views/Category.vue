@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-    import { ref, onMounted ,inject  ,watch ,onBeforeResolve } from 'vue'
+    import { ref, onMounted ,inject  ,watch } from 'vue'
     import { useRoute ,useRouter } from 'vue-router'
     import { useStore } from 'vuex'
     const store = useStore()
@@ -48,7 +48,7 @@
 
     //카테고리 선택
     let v_selected = categoryReduce[category]
-    store.commit('setSearchIcon' ,true)
+    //store.commit('setSearchIcon' ,true)
     // let categorySelected = v_categoryObj.filter(function(v){
     //  return v.id == category
     // })

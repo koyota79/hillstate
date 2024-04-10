@@ -1,8 +1,8 @@
 <template>
   <div class ="header">    
     <div class="search">
-        <img v-if="v_classActive" width= "25px" src = "../assets/images/btn_cont.png"  @click="fnShowSearch($event)" />
-        <div v-else class="arrow-prev"  @click="fnRouterBack()"></div>
+        <img v-show="v_classActive" width= "25px" src = "../assets/images/btn_cont.png"  @click="fnShowSearch($event)" />
+        <div v-show="v_classActive != v_classActive" class="arrow-prev"  @click="fnRouterBack()"></div>
     </div>    
     <top-logo  @click="fnGoMovePage($event)" ></top-logo>
     <search  ref="v_showSearch"></search>
@@ -17,9 +17,12 @@
   import { useStore } from 'vuex'
   const store = useStore()
 
-  let v_classActive = store.state.searchIcon
+  let url = history.state.current
+  let v_classActive =  url.search('/shop_info')==0?false:true
+
+  console.log('::watch:::::::::::::::' ,url , url.search('/shop_info')==0?false:true)
+
   const router = useRouter()
-  
   function fnGoMovePage(event) {      
     if(event){
       router.push({ path: '/' })
@@ -39,13 +42,20 @@
   // })
 
   function fnRouterBack(){
-    store.commit('setSearchIcon' ,true)
+    //store.commit('setSearchIcon' ,true)
     router.go(-1)
   }
 
+
+
+
+  // watch(history.state.current, (newX, newY) => {
+  //       console.log('::watch:::::::::::::::' ,newX , newY)
+  // })
   onMounted(() => {
-    v_classActive = store.state.searchIcon
-    console.log('store.state.searchIcon22222' , v_classActive)
+    //v_classActive = store.state.searchIcon 
+    //console.log('store.state.searchIcon22222' , v_classActive)
+
   });
 
 </script>
