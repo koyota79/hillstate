@@ -1,124 +1,157 @@
 <template>
-    <div class="shop-detail">
-        <!-- <img style="width:350px;" :src="getSrcPath()"  @onerror="imageLoadOnError"  /> -->
-        <div style="height: 300px;" >
-            <swiper
-                :pagination="{
-                type: 'fraction',
-                }"
-                :modules="modules"
-                class="mySwiper"
-            >
-                <swiper-slide><img style="width:350px;" :src="getSrcPath()"  @onerror="imageLoadOnError"  /></swiper-slide>
-                <swiper-slide>Slide 2</swiper-slide>
-                <swiper-slide>Slide 3</swiper-slide>
-            </swiper>
-        </div>
-        <div class="cont_title">
-            {{shopDetail.title}} 
-        </div>
-        <div class="cont_desc">
-            없는게 없는 다이소
-            없는게 없는 다이소
-            없는게 없는 다이소
-            없는게 없는 다이소
-            없는게 없는 다이소
-            없는게 없는 다이소
-        </div>
-        <div class="cont_time">
-            <div>영업시간 : <span class="cont_time_d">{{shopDetail.open_time}} - {{shopDetail.close_time}}</span></div>
-            <div>대표전화 : <span class="cont_time_d">{{shopDetail.tel_no}}</span></div>
-            <div>매장위치 : <span class="cont_time_d">{{shopDetail.position}}</span></div>
-        </div>
-
-        <div class="cont_title">
-            <div style="margin-top: 250px;">주요상품</div>
-        </div>
-        <div class="cont_menu">
-            <ul>
-                <li>테스트 상품</li>
-            </ul>
-        </div>
-        <div style="margin-top: 550px;">
+    <div class="detail-container">
+        <div class="shop-detail">
+            <!-- <img style="width:350px;" :src="getSrcPath()"  @onerror="imageLoadOnError"  /> -->
+            <!-- <div style="height: 300px;" >
+                <swiper :pagination="{ type: 'fraction',}" :modules="modules" class="mySwiper" >
+                    <swiper-slide><img style="width:350px;" :src="getSrcPath()"  @onerror="imageLoadOnError"  /></swiper-slide>
+                    <swiper-slide>Slide 2</swiper-slide>
+                    <swiper-slide>Slide 3</swiper-slide>
+                </swiper>
+            </div> -->
+            <div class="cont-title">
+                {{v_shopDetail.title}}
+            </div>
+            <div class="cont-title-sub">
+              {{v_shopDetail.position_area}} / {{v_shopDetail.position}}F / {{v_shopDetail.title}}
+            </div> 
+            <div class="cont_desc-container">
+                <div class="cont_time">
+                        <div>영업시간 : <span class="cont_time_d">{{v_shopDetail.open_time}} - {{v_shopDetail.close_time}}</span></div>
+                        <div>대표전화 : <span class="cont_time_d">{{v_shopDetail.tel_no}}</span></div>
+                        <div>매장위치 : <span class="cont_time_d">{{v_shopDetail.position}}F</span></div>
+                </div>  
+                <div class="cont_desc">
+                    {{v_shopDetail.description}}
+                </div>
+<!-- 
+                <div class="cont_title2">
+                    <div style="margin-top: 20px;">주요상품</div>
+                </div>
+                <div class="cont_menu">
+                    <ul>
+                        <li>테스트 상품</li>
+                    </ul>
+                </div> -->
+            </div>
+            <div style="margin-top: 550px;">
+            </div>
         </div>
     </div>
 </template>
 
-<script>
-    import { Swiper, SwiperSlide } from 'swiper/vue';
+<script setup>
+    import { ref, onMounted ,inject  ,watch , } from 'vue'
+    import { useRoute ,useRouter } from 'vue-router'
+    import { useStore } from 'vuex'
+    const store = useStore()
+ 
 
-    // Import Swiper styles
-    import 'swiper/css';
+    const Axios        = inject('Axios')//구역
+    let v_shopDetail   = ref({})
+    let Zone           = inject('Zone')
+   
+    function fetchData () {
+        let v_shop_id = history.state.shop_id
+        let p_url   = "/api/shop_info/" + v_shop_id   
+        Axios.get(p_url ,{}).then((response) => {
+            const shopInfo = response.data["shop_detail"]
+            
+            v_shopDetail.value.id              = shopInfo.shop_id
+            v_shopDetail.value.title           = shopInfo.shop_nm
+            v_shopDetail.value.open_time       = shopInfo.open_time
+            v_shopDetail.value.close_time      = shopInfo.close_time
+            v_shopDetail.value.tel_no          = shopInfo.tel_no
+            v_shopDetail.value.position        = shopInfo.position
+            v_shopDetail.value.description     = shopInfo.description            
+            v_shopDetail.value.position_area   = Zone[shopInfo.position_area]
+            v_shopDetail.value.image           = require("../assets/images/shop/"+ shopInfo.shop_id + "_detail_1.jpg")
 
-    import 'swiper/css/pagination';
-    import 'swiper/css/navigation';
-    // import required modules
-    import { Pagination, Navigation } from 'swiper/modules';
-export default {
-    components: {
-      Swiper,
-      SwiperSlide,
-    },
-    name: 'ShopDetail',
-    props: {
-        shop_id: {
-                type: String ,
-                default: ''
-            },
-        shop_nm: {
-            type: String ,
-            default: ''
-        }
-    },
-
-    data() {
-        return {
-            shopDetail : {},
-            modules: [Pagination, Navigation]
-    }
-
-    },
-    created() {
-      console.log("Parent created")
-      this.fetchData(history.state)
-    },    
-    methods: {
-        fetchData (params) {
-            console.log(11111111 ,params)
-            let v_shop_id = params.shop_id
-            let p_url   = "/api/shop_info/" + v_shop_id   
-            console.log("p_url" ,p_url);
-            this.$Axios.get(p_url ,{})
-            .then((response) => {
-            console.log(response);
-            console.log(response.data);
-            const v_shopInfo = response.data["shop_detail"]
-
-            this.shopDetail.id          = v_shopInfo.shop_id
-            this.shopDetail.title       = v_shopInfo.shop_nm
-            this.shopDetail.open_time   = v_shopInfo.open_time
-            this.shopDetail.close_time  = v_shopInfo.close_time
-            this.shopDetail.tel_no      = v_shopInfo.tel_no
-            this.shopDetail.position    = v_shopInfo.position
-            this.shopDetail.image       = require("../assets/images/shop/"+ v_shopInfo.shop_id + "_detail_1.jpg")
-
-            }).catch((error) => {
+        }).catch((error) => {
             console.log(error);
-            })
+        })
 
-        }
-        ,getSrcPath() {
-            try {
-                return  require("../assets/images/shop/"+ this.shopDetail.id + "_detail_1.jpg")
-            }catch(error){
-                return require("../assets/images/shop/no_image.jpg")
-            }
-        },
-        imageLoadOnError () {
-            this.shopDetail.image  = "../assets/images/shop/no_image.jpg"
-        }
     }
-}
+    onMounted(async () => {
+        fetchData()
+        console.log( 'mounted iconf' , store)
+    })
+
+//     import { Swiper, SwiperSlide } from 'swiper/vue';
+
+//     // Import Swiper styles
+//     import 'swiper/css';
+
+//     import 'swiper/css/pagination';
+//     import 'swiper/css/navigation';
+//     import { Pagination, Navigation } from 'swiper/modules';
+// export default {
+//     components: {
+//       Swiper,
+//       SwiperSlide,
+//     },
+//     name: 'ShopDetail',
+//     props: {
+//         shop_id: {
+//                 type: String ,
+//                 default: ''
+//             },
+//         shop_nm: {
+//             type: String ,
+//             default: ''
+//         }
+//     },
+
+//     data() {
+//         return {
+//             shopDetail : {},
+//             modules: [Pagination, Navigation],
+//     }
+
+//     },
+//     created() {
+//       console.log("Parent created")
+//       this.fetchData(history.state)
+//     }, 
+//     mounted(){
+//         this.$Store.commit('setSearchIcon');
+//       //this.$Store.searchIcon = true
+//       console.log( 'mounted iconf' , this.$Store)
+//     } ,  
+//     methods: {
+//         fetchData (params) {
+//             let v_shop_id = params.shop_id
+//             let p_url   = "/api/shop_info/" + v_shop_id   
+//             this.$Axios.get(p_url ,{}).then((response) => {
+//                 const shopInfo = response.data["shop_detail"]
+
+//                 v_shopDetail.id              = shopInfo.shop_id
+//                 v_shopDetail.title           = shopInfo.shop_nm
+//                 v_shopDetail.open_time       = shopInfo.open_time
+//                 v_shopDetail.close_time      = shopInfo.close_time
+//                 v_shopDetail.tel_no          = shopInfo.tel_no
+//                 v_shopDetail.position        = shopInfo.position
+//                 v_shopDetail.description     = shopInfo.description            
+//                 v_shopDetail.position_area   = this.$Zone[shopInfo.position_area]
+//                 v_shopDetail.image       = require("../assets/images/shop/"+ shopInfo.shop_id + "_detail_1.jpg")
+
+//             }).catch((error) => {
+//                 console.log(error);
+//             })
+
+//         }
+//         ,getSrcPath() {
+//             try {
+//                 return  require("../assets/images/shop/"+ v_shopDetail.id + "_detail_1.jpg")
+//             }catch(error){
+//                 return require("../assets/images/shop/no_image.jpg")
+//             }
+//         },
+//         imageLoadOnError () {
+//             v_shopDetail.image  = "../assets/images/shop/no_image.jpg"
+//         }
+//     }
+// }
 </script>
 <style scoped>
 /* swiper-pagination swiper-pagination-fraction swiper-pagination-horizontal */
@@ -126,37 +159,61 @@ export default {
         color:red;
         font-size: 55px;
     }
+    .detail-container{
+        position: relative;
+        width:100%;
+        display:flex; 
+        justify-content:center;
+    }
     .shop-detail{
         position : relative;
+        width:95%
     }
-    .cont_title{
-        margin-top :30px;
-        margin-left:20px;
+   
+    .cont-title{
+        margin:20px;
         font-size: 20px;
-        position: absolute;
-        line-height: 1.33;
-        font-weight: 700;
-        letter-spacing: -.02em;
+        height: 100px;
+        position: relative;
+        font-weight: bold;
+        padding:10px;
+        border:1px solid #dbdada;
+        border-radius: 5px;
+        align-content : center;
+        
+    }
+    .cont-title-sub{
+        font-size : 13px;
+        padding-bottom : 30px;
+    }
+    .cont_desc-container{
+        position: relative;
     }
     .cont_desc {
-        margin-top :75px;
-        margin-left:20px;
-        font-size: 15px;
-        position: absolute;
+        margin :15px;
+        font-size: 13px;
         line-height: 1.5;
-        letter-spacing: -.02em;
+        letter-spacing: -0.1em;
         word-spacing :normal;
         text-align : left;
+        border-bottom : 1px solid #ededed;    
+        border-top : 1px solid #ededed;  
+        padding:30px 0 40px 20px;    
+        width:80%
     }
     .cont_time {
-        margin-top :175px;
-        margin-left:20px;
-        font-size: 15px;
-        position: absolute;
+        margin :15px;
+        border-top : 1px solid ;  
+        font-size: 13px;
         line-height: 1.5;
         letter-spacing: -.02em;
         word-spacing :normal;
         text-align : left;
+        padding:20px;
+        width:80%
+    }
+    .cont_time div {
+        padding :5px;
     }
     .cont_time_d {
         font-weight: 700;

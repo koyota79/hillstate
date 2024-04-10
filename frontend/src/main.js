@@ -47,9 +47,11 @@ app.provide('Category',
 )
 
 app.provide('Zone', {0 : '가' ,1 : '나' ,2 : '다' ,3 : '라'})
+app.config.globalProperties.$Zone = {0 : '가' ,1 : '나' ,2 : '다' ,3 : '라'}
 
 //app.use(stackedUI, {router: router}); 
 app.use(router); // 사용 설정 하기
+app.use(Store);
 app.component('side-menu', Menu);
 app.component('main-slide', MainSlide);
 app.component('top-logo', TopLogo);

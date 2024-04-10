@@ -31,7 +31,8 @@
 <script setup>
     import { ref, onMounted ,inject  ,watch  } from 'vue'
     import { useRoute ,useRouter } from 'vue-router'
-
+    import { useStore } from 'vuex'
+    const store = useStore()
 
     //카테고리 
     const route         = useRoute()
@@ -93,6 +94,7 @@
     const router = useRouter()
     function fnShopDetail(event ,item) {
        if(event){
+            store.commit('setSearchIcon' ,false)
             router.push({ path: "/shop_info" ,name : "ShopDetail" 
              ,params : {shop_id : item.shop_id } 
              ,state: { //url 에서 안보이게 처리

@@ -4,7 +4,7 @@
     <select id="selectShopInfoDetail">
         select 
             shop_id ,shop_nm ,open_time ,close_time ,tel_no
-           ,position 
+           ,position  ,position_area ,description 
         from h_shop_mstr
         where shop_id = %(shop_id)s and use_yn = 'Y'
     </select>
@@ -13,7 +13,7 @@
     <select id="selectShopMapList">
        select 
               shop_id ,shop_nm ,open_time ,close_time ,tel_no
-             ,position ,position_area ,category
+             ,position ,position_area ,category ,description
          from h_shop_mstr
         where use_yn = 'Y'
 		  and position = case when %(position_idx)s != '' then %(position_idx)s else position end

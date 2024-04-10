@@ -1,32 +1,53 @@
 <template>
   <div class ="header">    
-    <div class="search"  @click="fnShowSearch($event)">
-        <img width= "25px" src = "../assets/images/btn_cont.png"  />
+    <div class="search">
+        <img v-if="v_classActive" width= "25px" src = "../assets/images/btn_cont.png"  @click="fnShowSearch($event)" />
+        <div v-else class="arrow-prev" :class="v_classActive !=v_classActive" @click="fnRouterBack()"></div>
     </div>    
     <top-logo  @click="fnGoMovePage($event)" ></top-logo>
-    <search  ref="ShowSearch"></search>
+    <search  ref="v_showSearch"></search>
     <!-- <img width="160px" src = "../assets/images/logo_hanam.png" /> -->
   </div>
   <!-- <side-menu></side-menu> -->
 </template>
 
-<script>
-export default {
-  data() {},
-  methods: {
-    fnGoMovePage(event) {      
-      if(event){
-          this.$router.push({ path: '/' })
-      }
-
-    },
-    fnShowSearch(e){
-      this.$refs.ShowSearch.fnShowSearch(e,true);
-       //this.$emit('fnParentScrollYn', p_classBind);
-       //this.$Store.commit('setScrollToggle')
+<script setup>
+  import { ref, onMounted ,inject  ,watch  } from 'vue'
+  import { useRoute ,useRouter } from 'vue-router'
+  import { useStore } from 'vuex'
+  const store = useStore()
+  // store.commit('searchIcon')
+  let v_classActive = store.state.searchIcon
+  const router = useRouter()
+  
+  function fnGoMovePage(event) {      
+    if(event){
+      router.push({ path: '/' })
     }
+
   }
-}
+
+  const v_showSearch = ref(null)
+  function fnShowSearch(e){
+    v_showSearch.value.fnShowSearch(e, true)
+      //this.$emit('fnParentScrollYn', p_classBind);
+      //this.$Store.commit('setScrollToggle')
+  } 
+
+  // watch(v_classActive, ([newX, newY]) => {
+  //     console.log(':::' ,newX , newY)
+  // })
+
+  function fnRouterBack(){
+    store.commit('setSearchIcon' ,true)
+    router.go(-1)
+  }
+
+  onMounted(async () => {
+    // v_classActive = store.state.searchIcon
+  
+  });
+
 </script>
 <style scoped>
   .header{
@@ -43,6 +64,12 @@ export default {
     float: left;
     position:relative;
     top:15px;
+  }
+  .search div{
+    float: left;
+    position:relative;
+    top:5px;
+    left:5px;
   }
   .top_log{
       right : 124px;
@@ -61,4 +88,16 @@ export default {
   .item-class-exp{
       text-align: left;
   }  
+
+  .arrow-prev {
+    position: absolute;
+    left: 15px; 
+    top: 35px;
+    content: '';
+    width: 15px; /* 사이즈 */
+    height: 15px; /* 사이즈 */
+    border-top: 2px solid #000; /* 선 두께 */
+    border-right: 2px solid #000; /* 선 두께 */
+    transform: rotate(225deg); /* 각도 */
+  }
 </style>

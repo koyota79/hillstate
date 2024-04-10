@@ -1,27 +1,32 @@
 -- Table: public.h_shop_mstr
 
 -- DROP TABLE IF EXISTS public.h_shop_mstr;
+-- Table: hillstate.h_shop_mstr
 
-CREATE TABLE IF NOT EXISTS public.h_shop_mstr
+-- DROP TABLE IF EXISTS hillstate.h_shop_mstr;
+
+CREATE TABLE IF NOT EXISTS hillstate.h_shop_mstr
 (
     shop_id character varying(5) COLLATE pg_catalog."default" NOT NULL,
     shop_nm character varying(255) COLLATE pg_catalog."default",
     open_time character varying(5) COLLATE pg_catalog."default",
     close_time character varying(5) COLLATE pg_catalog."default",
-    tel_no character varying(12) COLLATE pg_catalog."default",
+    tel_no character varying(15) COLLATE pg_catalog."default",
     "position" character varying(5) COLLATE pg_catalog."default",
     use_yn character varying(1) COLLATE pg_catalog."default" DEFAULT 'Y'::character varying,
+    position_area integer,
+    category character varying(10) COLLATE pg_catalog."default",
+    description character varying(255) COLLATE pg_catalog."default",
     CONSTRAINT h_shop_mstr_pkey PRIMARY KEY (shop_id)
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.h_shop_mstr
+ALTER TABLE IF EXISTS hillstate.h_shop_mstr
     OWNER to hillstate;
 
-COMMENT ON TABLE public.h_shop_mstr
+COMMENT ON TABLE hillstate.h_shop_mstr
     IS '상점 마스터';
-
 
 
     -- Table: public.h_shop_mstr_test
