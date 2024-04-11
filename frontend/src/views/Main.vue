@@ -6,7 +6,7 @@
             <h3>브랜드 이벤트</h3>
         </div>
         <div class="main_img">
-             <img src = "../assets/images/event1.jpg"/>
+            <router-link to="Event"><img src = "../assets/images/event1.jpg"/></router-link>
         </div>
         <div class="main-category">
             <ul>
@@ -17,10 +17,10 @@
             </ul>
         </div>
         <div class="new-shop">
-            <img src = "../assets/images/new_brand.jpg"/>
+            <router-link to="Content"><img src = "../assets/images/new_brand.jpg"/></router-link>
         </div>
         <div class="parking-info">
-            주차 안내
+            <router-link to="Location">주차 안내</router-link>
         </div>
         <!-- <button @click="plus()">숫자: {{ cnt }}</button>
         <div v-html="rawHtml"></div> -->
@@ -104,5 +104,9 @@ function fnCategoryPageMove(event ,key){
         height: 100px;
         font-size : 20px;
         font-weight:bold;
+    }
+    .parking-info a{
+        text-decoration-line:none;
+        color:black;
     }
 </style>

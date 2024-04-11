@@ -13,26 +13,37 @@
                 {{v_shopDetail.title}}
             </div>
             <div class="cont-title-sub">
-              {{v_shopDetail.position_area}} / {{v_shopDetail.position}}F / {{v_shopDetail.title}}
+              {{v_shopDetail.positionArea}} / {{v_shopDetail.position}}F / {{v_shopDetail.title}}
             </div> 
             <div class="cont_desc-container">
                 <div class="cont_time">
                         <div>영업시간 : <span class="cont_time_d">{{v_shopDetail.open_time}} - {{v_shopDetail.close_time}}</span></div>
                         <div>대표전화 : <span class="cont_time_d">{{v_shopDetail.tel_no}}</span></div>
-                        <div>매장위치 : <span class="cont_time_d">{{v_shopDetail.position}}F</span></div>
+                        <div>매장위치 : <span class="cont_time_d">{{v_shopDetail.position}}F</span><span style="float: right;"><img width="30px;" :src="require('@/assets/images/icon/pos_marker.jpg')"></span></div>
                 </div>  
                 <div class="cont_desc">
-                    {{v_shopDetail.description}}
+                    {{v_shopDetail.description==null?v_shopDetail.title:v_shopDetail.description}}
                 </div>
-<!-- 
-                <div class="cont_title2">
-                    <div style="margin-top: 20px;">주요상품</div>
+
+                <div class="cont-major">
+                    <div>주요 상품</div>
+                    <div class="cont-major-sub">
+                        <div class="cont-major-item">
+                            <span >테스트 상품</span><span>11,000 원</span>
+                        </div>
+                    </div>
+                    <div class="cont-major-sub">
+                        <div class="cont-major-item">
+                            <span >테스트 상품111111</span><span>21,000 원</span>
+                        </div>
+                    </div>
+                    <div class="cont-major-sub">
+                        <div class="cont-major-item">
+                            <span >테스트22</span><span>131,000 원</span>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="cont_menu">
-                    <ul>
-                        <li>테스트 상품</li>
-                    </ul>
-                </div> -->
             </div>
             <div style="margin-top: 550px;">
             </div>
@@ -64,9 +75,9 @@
             v_shopDetail.value.tel_no          = shopInfo.tel_no
             v_shopDetail.value.position        = shopInfo.position
             v_shopDetail.value.description     = shopInfo.description            
-            v_shopDetail.value.position_area   = Zone[shopInfo.position_area]
+            v_shopDetail.value.positionArea    = Zone[shopInfo.position_area]
             v_shopDetail.value.image           = require("../assets/images/shop/"+ shopInfo.shop_id + "_detail_1.jpg")
-
+            v_shopDetail.value.markerImage     = require("../assets/images/icon/pos_marker.jpg")
         }).catch((error) => {
             console.log(error);
         })
@@ -227,4 +238,43 @@
         letter-spacing: -.02em;
         word-spacing :normal;
     }
+    .cont-major{
+        position: relative;
+        top:55px;
+        font-weight: bold;
+    }
+ 
+    .cont-major-sub{
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    .cont-major-item{
+        align-items: center;
+        display: flex;
+        flex: 1 1 auto;
+        justify-content: space-between;
+        line-height: 22px;
+        margin-left: 16px;
+        position: relative;
+    }
+    .cont-major-item span{
+        font-size: 13px;
+        font-weight: initial;
+        z-index: 1;
+        background-color: #fff;
+        padding: 8px;        
+    }
+     .cont-major-item:after {
+        border-top: 1px dashed #ccc;
+        content: "";
+        display: block;
+        height: 1px;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 0;
+    }    
 </style>

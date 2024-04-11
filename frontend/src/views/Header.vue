@@ -71,12 +71,13 @@
     float: left;
     position:relative;
     top:15px;
+    width:40px;
   }
   .search div{
     float: left;
     position:relative;
     top:5px;
-    left:5px;
+    left:15px;
   }
   .top_log{
       right : 124px;
@@ -98,7 +99,6 @@
 
   .arrow-prev {
     position: absolute;
-    left: 15px; 
     top: 35px;
     content: '';
     width: 15px; /* 사이즈 */
