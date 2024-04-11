@@ -2,7 +2,7 @@
   <div class ="header">    
     <div class="search">
         <img v-show="v_classActive" width= "25px" src = "../assets/images/btn_cont.png"  @click="fnShowSearch($event)" />
-        <div v-show="v_classActive != v_classActive" class="arrow-prev"  @click="fnRouterBack()"></div>
+        <div v-show="v_classActive =! v_classActive" class="arrow-prev"  @click="fnRouterBack()"></div>
     </div>    
     <top-logo  @click="fnGoMovePage($event)" ></top-logo>
     <search  ref="v_showSearch"></search>
@@ -20,7 +20,7 @@
   let url = history.state.current
   let v_classActive =  url.search('/shop_info')==0?false:true
 
-  console.log('::watch:::::::::::::::' ,url , url.search('/shop_info')==0?false:true)
+  //console.log('::watch:::::::::::::::' ,url , url.search('/shop_info')==0?false:true)
 
   const router = useRouter()
   function fnGoMovePage(event) {      
@@ -45,9 +45,6 @@
     //store.commit('setSearchIcon' ,true)
     router.go(-1)
   }
-
-
-
 
   // watch(history.state.current, (newX, newY) => {
   //       console.log('::watch:::::::::::::::' ,newX , newY)
