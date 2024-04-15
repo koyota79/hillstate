@@ -20,9 +20,10 @@ import { ref, onMounted ,reactive  } from 'vue'
 import { objShopMap ,fnFillText } from '../js/shopMap.js' 
 const dpr = window.devicePixelRatio;
 
-let start           = {x:0, y: 0 ,tempX :0 ,tempY : 0 ,zoom : 0.9 ,width:0 ,height:0 ,zoomX : 0 ,zoomY :0}
+let start           = {x:0, y: 0 ,tempX :0 ,tempY : 0 ,zoom : 1.2 ,width:0 ,height:0 ,zoomX : 0 ,zoomY :0}
 const isActive      = ref(null)
-const ZOOM_SPEED    = 0.05
+const ZOOM_SPEED    = 0.5
+const PINCH_SPEED   = 0.03
 let v_viewReactive  =  reactive({ width: 400  ,height : 550})
 let isDrag          = false
 
@@ -268,9 +269,15 @@ onMounted(() => {
             start.x = (x - start.tempX)
             start.y = (y - start.tempY)
 
-            console.log( x ,'move pass' ,y)
+            //console.log( x ,'move pass' ,y)
             //console.log( x ,'move pass' ,y)
             isDrag = true
+            
+            console.log('startDistanceBetweenFingers' , e.touches.length)
+            if (e.touches.length == 2) {
+                fnPinchStart(e)
+            }
+
         
     };
 
@@ -278,6 +285,12 @@ onMounted(() => {
         if(isDrag){  
             let clientX = parseInt(e.touches[0].clientX - start.x)
             let clientY = parseInt(e.touches[0].clientY - start.y)
+
+
+            if (e.touches.length == 2) {
+                fnPinchMove(e)
+            }
+
 
             //마지막 위치값 저장
             drowCanvas()
@@ -290,6 +303,33 @@ onMounted(() => {
     function fnTouchEnd(e) {
         isDrag = false
     };
+
+    function getDistanceBetweenFingers(evt) {
+        var dx = evt.touches[0].clientX - evt.touches[1].clientX;
+        var dy = evt.touches[0].clientY - evt.touches[1].clientY;
+        return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    var startDistanceBetweenFingers = 0;
+    function fnPinchStart(e) {
+      startDistanceBetweenFingers = getDistanceBetweenFingers(e);
+    }
+
+    function fnPinchMove(e) {
+        var currentDistanceBetweenFingers = getDistanceBetweenFingers(e);
+
+        // When the distance between the two fingers increases, zoom in
+        if (currentDistanceBetweenFingers > startDistanceBetweenFingers) {
+            start.zoom += PINCH_SPEED;
+        }
+
+        // When the distance between the two fingers decreases, zoom out
+        if (currentDistanceBetweenFingers < startDistanceBetweenFingers) {
+            start.zoom -= PINCH_SPEED;
+        }
+
+        startDistanceBetweenFingers = currentDistanceBetweenFingers;
+    }
 
     canvas.addEventListener('touchstart', fnTouchStart);
     canvas.addEventListener('DOMContentLoaded', fnTouchStart); 
