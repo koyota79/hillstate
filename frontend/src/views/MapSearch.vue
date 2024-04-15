@@ -1,7 +1,7 @@
 <template>
     <div class="map-container">
         <div class="map"  id="site-map"> 
-            <canvas id="canvas" :style="{ width: v_viewReactive.width + 'px' ,height:v_viewReactive.height + 'px' }"></canvas>
+            <canvas id="canvas" :style="{ width: v_viewReactive.width + 'px' ,height:v_viewReactive.height + 'px' }" class="canvas"></canvas>
         </div>
 
 
@@ -18,11 +18,12 @@
 <script setup>
 import { ref, onMounted ,reactive  } from 'vue'
 import { objShopMap ,fnFillText } from '../js/shopMap.js' 
+const dpr = window.devicePixelRatio;
 
-let start           = {x:0, y: 0 ,tempX :0 ,tempY : 0 ,zoom : 1 ,width:0 ,height:0 ,zoomX : 0 ,zoomY :0}
+let start           = {x:0, y: 0 ,tempX :0 ,tempY : 0 ,zoom : 0.9 ,width:0 ,height:0 ,zoomX : 0 ,zoomY :0}
 const isActive      = ref(null)
 const ZOOM_SPEED    = 0.05
-let v_viewReactive  =  reactive({ width: 400  ,height : 450})
+let v_viewReactive  =  reactive({ width: 400  ,height : 550})
 let isDrag          = false
 
 
@@ -32,9 +33,10 @@ onMounted(() => {
     const ctx       = canvas.getContext("2d");
     const siteMap   = document.getElementById('site-map');
     const viewSize  =  (window.innerWidth/siteMap.clientWidth).toFixed(2)
-
-    canvas.width  = siteMap.clientWidth * viewSize
-    canvas.height = siteMap.clientHeight * viewSize
+    const rect = canvas.getBoundingClientRect();
+    
+    canvas.width  = siteMap.clientWidth * dpr
+    canvas.height = siteMap.clientHeight * dpr //rect.height * dpr 
     v_viewReactive.width = canvas.width
     v_viewReactive.height = canvas.height
 
@@ -44,7 +46,7 @@ onMounted(() => {
 
 
     function drowCanvas(){  
-        console.log('drowCanvas 호출')
+        //console.log('drowCanvas 호출')
         let drowPosX  = parseInt(canvas.width/2)
         let drowPosY  = parseInt(canvas.height/2)
         //console.log(drowPosX , drowPosY ,'getTransPos wheel' ,getTransPos.e ,getTransPos.f)
@@ -73,8 +75,8 @@ onMounted(() => {
         ctx.lineTo(0, 560); //모서리
         ctx.lineTo(0, 5); //나
         ctx.lineTo(5, 0); 
-
-        ctx.fillStyle = '#FFFFF0'; //아이보리
+        ctx.strokeStyle = '#6f6f75'
+        ctx.fillStyle = '#FFFFFF'; //
         ctx.fill(); 
         ctx.stroke();
     
@@ -85,6 +87,7 @@ onMounted(() => {
         ctx.lineTo(445, 300);
         ctx.lineTo(180, 300);
         ctx.lineTo(180, 200);
+        ctx.strokeStyle = '#DCDCDC'
         ctx.fillStyle = '#DCDCDC'; //DCDCDC 회색
         ctx.fill();
         ctx.stroke();
@@ -235,16 +238,15 @@ onMounted(() => {
 
 
 
-        fnFillText("관리지원\n센터",2, 17 ,ctx);  
-        fnFillText("클린토피아",2, 42 ,ctx);  
-        fnFillText('꼬\n북\n이\n한\n의\n원' ,410 ,545 ,ctx)
+        fnFillText("관리지원\n센터",200, 105 ,ctx);  
+        fnFillText("크린토피아",2, 45 ,ctx);  
+        fnFillText('거북이\n한의원' ,400 ,560 ,ctx)
 
         //requestAnimationFrame(drowCanvas);
     }
-
-
     drowCanvas()
 
+    //https://github.com/robinrodricks/vue3-touch-events/issues/7
     canvas.addEventListener("wheel", function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -269,6 +271,7 @@ onMounted(() => {
             console.log( x ,'move pass' ,y)
             //console.log( x ,'move pass' ,y)
             isDrag = true
+        
     };
 
     function fntouchmove(e){
@@ -296,7 +299,7 @@ onMounted(() => {
     canvas.addEventListener('DOMContentLoaded', fnTouchEnd); 
 
     const elements    = document.getElementsByClassName('fnClickShop');
-    console.log(elements)
+    //console.log(elements)
 
     for (var i = 0; i < elements.length; i++) {
         elements[i].addEventListener('touchstart', fnClickShop, false);
@@ -340,8 +343,8 @@ function fnShopMenuOpen(e){
         position : relative;
         z-index : 1;
         border:1px solid;
-        width:100%;
-        height:100%;
+        width:400px;
+        height:550px;
         background-color:white;
         overflow: hidden;
     }
@@ -373,5 +376,8 @@ function fnShopMenuOpen(e){
     .menu-list div{
         position: relative;
         top:20px;
+    }
+    .canvas{
+        transition: all 0.3s ease-out;
     }
 </style>

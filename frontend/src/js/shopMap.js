@@ -28,7 +28,7 @@ const objShopMap = [{} //B1
                         {'shop_id' : '2002' ,'X': 545 ,'Y' : 635 ,'W' : 34 ,'H' :50 ,'R':2},      
                         {'shop_id' : '2001' ,'X': 580 ,'Y' : 635 ,'L' : [[580,635],[618,635] ,[618,670] ,[600,685] ,[580,685]] ,'R':99},    
                         
-                        {'shop_id' : '2002' ,'X': 200 ,'Y' : 530 ,'W' : 34 ,'H' :70 ,'R':2},
+                        {'shop_id' : '2237' ,'X': 200 ,'Y' : 530 ,'W' : 34 ,'H' :70 ,'R':2},
                         {'shop_id' : '2002' ,'X': 0 ,'Y' : 530 ,'W' : 34 ,'H' :70 ,'R':2},
                         {'shop_id' : '2002' ,'X': 0 ,'Y' : 530 ,'W' : 34 ,'H' :70 ,'R':2},
 
@@ -170,9 +170,9 @@ const objShopMap = [{} //B1
 ]
 
 const fnFillText  =  (txt , x ,y ,ctxObj) => {
-    ctxObj.font = "9px Arial";
+    ctxObj.font = "10px NanumGothic";
     ctxObj.fillStyle = "black";
-    const lineheight = 10;
+    const lineheight = 12;
     const lines = txt.split('\n');
     for (let i = 0; i < lines.length; i++) {
         ctxObj.fillText(lines[i], x, y + (i * lineheight));
