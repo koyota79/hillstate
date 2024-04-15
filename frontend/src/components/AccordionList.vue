@@ -222,7 +222,7 @@
     }
     .collapsible:after {
         content: '';
-        color: white;
+        color: rgb(255, 255, 255);
         font-weight: bold;
         float: right;
         margin-left: 5px;

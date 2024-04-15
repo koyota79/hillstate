@@ -39,6 +39,7 @@
                         <p class="recommend_text" @click="fnCategoryPageMove($event ,'BEAUTY')">뷰티</p>
                         <p class="recommend_text" @click="fnCategoryPageMove($event ,'SHOP')">쇼핑</p>
                         <p class="recommend_text" @click="fnCategoryPageMove($event ,'SERVICE')">문화/서비스</p>
+                        <router-link to="MapSearch"><p class="recommend_text">테스트</p></router-link>
                     </div>
                 </div>
             </div>

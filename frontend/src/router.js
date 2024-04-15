@@ -10,6 +10,7 @@ import ShopDetail from './views/ShopDetail'
 import Event from './views/Event'
 import Location from './views/Location.vue'
 import Category from './views/Category.vue'
+import MapSearch from './views/MapSearch.vue'
 
 const routes = [
       {
@@ -54,7 +55,13 @@ const routes = [
               name: 'Category',
               props : true,
               component: ()=> Category
-            },                                    
+            },     
+            { 
+              path: '/mapSearch',
+              name: 'MapSearch',
+              props : true,
+              component: ()=> MapSearch
+            },                                              
             {path: '/notFound', component: ErrorPage },
             {
               path: "/:pathMatch(.*)*",

@@ -89,7 +89,7 @@ function fnCategoryPageMove(event ,key){
         width:47%; 
         text-align :center;
         height:70px;
-        border:1px solid #d9c086;
+        border:1px solid #979797;
         align-content:center;
         margin:5px 0  5px 5px;
         font-weight:bold;
