@@ -14,7 +14,7 @@ import Search from './components/Search';
 import Footer from './components/Footer'; 
 import axios from 'axios';
 import {Axios ,hostUrl} from './baseURL';
-import Store from "./store/index";
+import Store from "./store/store";
 
 // axios를 import
 

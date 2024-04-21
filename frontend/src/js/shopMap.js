@@ -6,7 +6,12 @@ const objShopMap = [{} //B1
     },
     //2층
     {
-
+        shopNmPos     : [
+                {'shop_id' : '2001' ,'x': 30 ,'y': 180 ,'shop_nm' : '테스트상점' , 'px' : 159 ,'py' : 118},
+                {'shop_id' : '2002' ,'x': 450 ,'y': 380 ,'shop_nm' : '관리지원센터' , 'px' : -9 ,'py' : 45},
+                {'shop_id' : '2003' ,'x': 950 ,'y': 400 ,'shop_nm' : '샌드하우스' , 'px' : -210 ,'py' : 50},
+    
+        ] ,
         A : {
                 data : [  
                         {'shop_id' : '2002' ,'X': 73 ,'Y' : 601 ,'L' : [[73,601], [45,624], [25,600], [54,582]] ,'R':99},
@@ -38,7 +43,7 @@ const objShopMap = [{} //B1
 
                     ],  
                 color         : '#f4adb1',
-                strokeStyle   : '#FFFFFF'
+                strokeStyle   : '#FFFFFF',
         },
         B : {
                     data : [  
@@ -170,12 +175,16 @@ const objShopMap = [{} //B1
 ]
 
 const fnFillText  =  (txt , x ,y ,ctxObj) => {
-    ctxObj.font = "10px NanumGothic";
+    let fontSize = 20    * ctxObj.start.zoomX
+    ctxObj.font = fontSize + "px NanumGothic";
     ctxObj.fillStyle = "black";
     const lineheight = 12;
     const lines = txt.split('\n');
+
+    let posX = (x * ctxObj.start.zoomX)
+    let posY = (y * ctxObj.start.zoomY)
     for (let i = 0; i < lines.length; i++) {
-        ctxObj.fillText(lines[i], x, y + (i * lineheight));
+        ctxObj.fillText(lines[i], (posX + ctxObj.start.tempX), (posY + ctxObj.start.tempY) + (i * lineheight));
     }
 }
  

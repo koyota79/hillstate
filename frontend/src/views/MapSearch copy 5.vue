@@ -28,7 +28,7 @@ const isActive      = ref(null)
 const ZOOM_SPEED    = 0.05
 const PINCH_SPEED   = 0.03
 
-let v_viewReactive  =  reactive({ width: 800  ,height : 1100})
+let v_viewReactive  =  reactive({ width: 400  ,height : 550})
 let isDrag          = false
 
 
@@ -36,75 +36,54 @@ onMounted(() => {
     
     const canvas    = document.getElementById('canvas');
     const ctx       = canvas.getContext("2d");
+    const siteMap   = document.getElementById('site-map');
+    const viewSize  =  (window.innerWidth/siteMap.clientWidth).toFixed(2)
+    const rect = canvas.getBoundingClientRect();
     const image     = document.getElementById("source");
 
-    canvas.width    =  v_viewReactive.width
-    canvas.height   =  v_viewReactive.height
+    canvas.width  = siteMap.clientWidth 
+    canvas.height = siteMap.clientHeight //rect.height * dpr 
+    v_viewReactive.width = canvas.width
+    v_viewReactive.height = canvas.height
 
-    let scaleRatio = 0
-    scaleRatio = (canvas.height / image.height).toFixed(1)
-    console.log( scaleRatio,'move scaleRatio')
-    start.zoomX = scaleRatio
-    start.zoomY = scaleRatio
-    let lastZoomScale = null
+
+    start.width  = canvas.width
+    start.height = canvas.height
+
 
     function drowCanvas(){  
+        //console.log('drowCanvas 호출')
+        let drowPosX  = parseInt(canvas.width/2)
+        let drowPosY  = parseInt(canvas.height/2)
+        //console.log(drowPosX , drowPosY ,'getTransPos wheel' ,getTransPos.e ,getTransPos.f)
+
         ctx.reset();
-        ctx.drawImage(image, start.tempX, start.tempY ,image.width * start.zoomX  , image.height * start.zoomY ) 
-        ctx.start = start
-        fnFillText("크린토피아", 60 , 180 ,ctx);  
-        fnFillText("관리지원\n센터", 480 , 380 ,ctx);  
-        // fnFillText("관리지원\n센터",250, 105 ,ctx);  
-        // fnFillText("크린토피아",80 , 100 ,ctx);  
-        // fnFillText('거북이\n한의원' ,400 ,560 ,ctx)
+        ctx.translate(drowPosX ,drowPosY);
+        //ctx.transform(start.zoom, 0 , 0, start.zoom, start.tempX, start.tempY);
+        ctx.drawImage(image, start.tempX, start.tempY ,start.width , start.height)
+        ctx.translate(-drowPosX ,-drowPosY);
+
+
+
+
+        fnFillText("관리지원\n센터",200, 105 ,ctx);  
+        fnFillText("크린토피아",2, 45 ,ctx);  
+        fnFillText('거북이\n한의원' ,400 ,560 ,ctx)
 
         //requestAnimationFrame(drowCanvas);
     }
     drowCanvas()
 
+    //https://github.com/robinrodricks/vue3-touch-events/issues/7
     canvas.addEventListener("wheel", function (e) {
             e.preventDefault();
             e.stopPropagation();
 
-            let v_zoom = e.deltaY < 0 ? start.zoomX + ZOOM_SPEED : start.zoomX - ZOOM_SPEED;
-            var deltaScale = 0
-            if( lastZoomScale ) {
-                deltaScale  = Math.abs(v_zoom) - Math.abs(lastZoomScale)
-                //console.log(v_zoom , ':::deltaScale',lastZoomScale , '=' , Number(Math.abs(v_zoom) - Math.abs(lastZoomScale)) ) 
-            }
- 
-            lastZoomScale = v_zoom;
+            let v_zoom = e.deltaY < 0 ? start.zoom + ZOOM_SPEED : start.zoom- ZOOM_SPEED;
+            start.zoom = v_zoom
 
-            var newScale =  v_zoom;
-   
-
-            start.zoomX = newScale
-            start.zoomY = newScale
-
-            var currentWidth    = (image.width * start.zoomX );
-            var currentHeight   = (image.height * start.zoomY );
-            var deltaWidth      = image.width*deltaScale;
-            var deltaHeight     = image.height*deltaScale;
- 
-
-            var canvasmiddleX = canvas.clientWidth / 2;
-            var canvasmiddleY = canvas.clientHeight / 2;
-            var xonmap = (-start.tempX) + canvasmiddleX;
-            var yonmap = (-start.tempY) + canvasmiddleY;
-
-            var coefX = -xonmap / (currentWidth);
-            var coefY = -yonmap / (currentHeight);
-
-         
-
-            var newPosX = start.tempX + deltaWidth * coefX.toFixed(1);
-            var newPosY = start.tempY + deltaHeight * coefY.toFixed(1);
-
-            console.log(newPosX , ' deltaHeight ' ,newPosY)
-
-
-            start.tempX = newPosX
-            start.tempY = newPosY
+            start.width  = start.width * v_zoom
+            start.height = start.height * v_zoom
             drowCanvas()         
     });
 
@@ -130,9 +109,6 @@ onMounted(() => {
     };
 
     function fntouchmove(e){
-        e.preventDefault();
-        e.stopPropagation();
-        
         if(isDrag){  
             let clientX = parseInt(e.touches[0].clientX - start.x)
             let clientY = parseInt(e.touches[0].clientY - start.y)
@@ -206,13 +182,14 @@ onMounted(() => {
         const shop_id = e.touches[0].target.dataset.id
         if(shop_id=="2002"){
             start.tempX = -350
-            start.tempY = -157
+            start.tempY = 137
         }else{
-            start.tempX = 0
-            start.tempY = 0
+            start.tempX = 124
+            start.tempY = 137
         }
-
+        start.zoom = 1.5
         drowCanvas()
+   
     }
 
 })

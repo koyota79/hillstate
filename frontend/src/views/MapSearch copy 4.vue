@@ -20,10 +20,11 @@ import { ref, onMounted ,reactive  } from 'vue'
 import { objShopMap ,fnFillText } from '../js/shopMap.js' 
 const dpr = window.devicePixelRatio;
 
-let start           = {x:0, y: 0 ,tempX :0 ,tempY : 0 ,zoom : 1.2 ,width:0 ,height:0 ,zoomX : 0 ,zoomY :0 ,oldZoom : 1.2}
+let start           = {x:0, y: 0 ,tempX :0 ,tempY : 0 ,zoom : 1.2 ,width:0 ,height:0 ,zoomX : 0 ,zoomY :0}
 const isActive      = ref(null)
-const ZOOM_SPEED    = 0.1
+const ZOOM_SPEED    = 0.5
 const PINCH_SPEED   = 0.03
+
 let v_viewReactive  =  reactive({ width: 400  ,height : 550})
 let isDrag          = false
 
@@ -48,25 +49,14 @@ onMounted(() => {
 
     function drowCanvas(){  
         //console.log('drowCanvas 호출')
-
-        if(start.zoom < 0.5 || start.zoom > 4 ){
-            start.zoom = start.zoom <= 0.5?0.5:4 
-        }
-
-        let drowPosX  = (parseInt(canvas.width/2) - start.tempX) //parseInt(canvas.width/2)
-        let drowPosY  = (parseInt(canvas.height/2) - start.tempY)//parseInt(canvas.height/2)
-        let storedTransform = ctx.getTransform();
-        console.log(storedTransform , );
-
-
-
-
+        let drowPosX  = parseInt(canvas.width/2)
+        let drowPosY  = parseInt(canvas.height/2)
+        //console.log(drowPosX , drowPosY ,'getTransPos wheel' ,getTransPos.e ,getTransPos.f)
 
         ctx.reset();
-        ctx.translate(drowPosX ,drowPosY);        
-        ctx.transform(start.zoom, 0 , 0, start.zoom, start.tempX, start.tempY);    
+        ctx.translate(drowPosX ,drowPosY);
+        ctx.transform(start.zoom, 0 , 0, start.zoom, start.tempX, start.tempY);
         ctx.translate(-drowPosX ,-drowPosY);
-        
  
 
         //ctx.fillStyle = '#dbdada';//캔버스 바탕색
@@ -258,63 +248,56 @@ onMounted(() => {
     }
     drowCanvas()
 
+    //https://github.com/robinrodricks/vue3-touch-events/issues/7
     canvas.addEventListener("wheel", function (e) {
             e.preventDefault();
             e.stopPropagation();
 
-            let v_zoom = e.deltaY < 0 ? start.zoom + ZOOM_SPEED : start.zoom - ZOOM_SPEED;
+            let v_zoom = e.deltaY < 0 ? start.zoom + ZOOM_SPEED : start.zoom- ZOOM_SPEED;
             start.zoom = v_zoom
 
-            // start.width  = start.width * v_zoom
-            // start.height = start.height * v_zoom
-
-            //const { top, left } = e.currentTarget.getBoundingClientRect();
-         
+            start.width  = start.width * v_zoom
+            start.height = start.height * v_zoom
             drowCanvas()         
     });
 
     function fnTouchStart(e) {
-            let rect = canvas.getBoundingClientRect();
-            console.log( rect,'move pass' , e.touches[0].clientX)
+            //let rect = canvas.getBoundingClientRect();
+  
             let x = parseInt(e.touches[0].clientX)
             let y = parseInt(e.touches[0].clientY)
-            //move의 마지막 위치값을 클릭한 값을 뺀다(드래그 한후 마지막 그림의 좌표값을 가져와서 해당위치에 멈춰있어야 함)
+            //move의 마지막 위치값을 클릭한 값을 뺀다(빼면 마지막 그림의 좌표값을 가져옴)
             start.x = (x - start.tempX)
             start.y = (y - start.tempY)
-            start.width = e.target.clientWidth
-            start.height =  e.target.clientHeight
-            //console.log( x ,'move pass' ,y ,  x/2 ,'중심점' ,y/2)
+
+            //console.log( x ,'move pass' ,y)
             //console.log( x ,'move pass' ,y)
             isDrag = true
             
-            //모바일 핀치줌
+            console.log('startDistanceBetweenFingers' , e.touches.length)
             if (e.touches.length == 2) {
                 fnPinchStart(e)
-            }  
+            }
+
+        
     };
 
     function fntouchmove(e){
         if(isDrag){  
-            //드래그한 값과 최초 시작점의 위치의 값을 구해야 처음좌표로 이동 안함
             let clientX = parseInt(e.touches[0].clientX - start.x)
             let clientY = parseInt(e.touches[0].clientY - start.y)
 
-            //모바일 핀치줌
-            if (e.touches.length == 2) {                
+
+            if (e.touches.length == 2) {
                 fnPinchMove(e)
             }
 
+
             //마지막 위치값 저장
+            drowCanvas()
+            //requestAnimationFrame(drowCanvas);
             start.tempX = clientX
             start.tempY = clientY
-
-            start.zoomX = e.touches[0].clientX
-            start.zoomY = e.touches[0].clientY
-            drowCanvas()
-            
-            console.log( '마우스 위치값',e.touches[0].clientX ,e.touches[0].clientY)
-
-            //requestAnimationFrame(drowCanvas);
         }
     }
 
@@ -335,6 +318,7 @@ onMounted(() => {
 
     function fnPinchMove(e) {
         var currentDistanceBetweenFingers = getDistanceBetweenFingers(e);
+
         // When the distance between the two fingers increases, zoom in
         if (currentDistanceBetweenFingers > startDistanceBetweenFingers) {
             start.zoom += PINCH_SPEED;
