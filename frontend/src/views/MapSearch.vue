@@ -7,17 +7,13 @@
             <img id="source" src="../assets/images/site_map_2.jpg" />
         </div>
         <div class="floor-select">
-            <select name="likeLanguage" id="" class="pl">
-                <option value="0" selected>B1</option>
+            <select id="floor" class="pl">
+                <option value="B1">B1</option>
                 <option value="1">1F</option>
-                <option value="2">2F</option>
+                <option value="2" selected>2F</option>
                 <option value="3">3F</option>
             </select>
         </div>
-        <!-- <div class="pinch-zoom">
-            <img src="https://github.com/manuelstofer/pinchzoom/blob/master/demo/frog.jpg?raw=true"/>
-        </div> -->
-
         <div class="menu-container" :class="[isActive ? 'menu-after' : '']">
             <div @click="fnShopMenuOpen($event)">매장 선택</div>
             <div class="menu-list">
@@ -34,52 +30,57 @@ import { ref, onMounted ,reactive  } from 'vue'
 import { objShopMap ,fnFillText } from '../js/shopMap.js' 
 import {ImgTouchCanvas} from '../js/pinch-zoom.js'  
 const isActive      = ref(null)
-const isFloorActive = ref(null)
-onMounted(() => {  
 
-    const canvasObj = new ImgTouchCanvas({
+onMounted(() => {  
+    const floorSelect =  document.getElementById('floor')
+    floorSelect.options[2].selected = true
+
+    //디폴드 이미지 생성
+    let mapObject = new ImgTouchCanvas({
         canvas: document.getElementById('canvas'),
         path: require("../assets/images/site_map_2.jpg"),
         desktop: true,
         shopNmPos : objShopMap[2].shopNmPos
-    });
+    })
 
+
+    //하단 메뉴 함수 셋팅
     const elements    = document.getElementsByClassName('fnClickShop');
-    //console.log(elements)
-
     for (var i = 0; i < elements.length; i++) {
         elements[i].addEventListener('touchstart', fnClickShop, false);
         elements[i].addEventListener('DOMContentLoaded', fnClickShop); 
     }
 
-
-
-    
-
+    //하단 메뉴 클릭
     function fnClickShop(e){
         const shop_id = e.touches[0].target.dataset.id
-        canvasObj.selectedShop(shop_id)
-
-        // if(shop_id=="2002"){
-        //     start.tempX = -350
-        //     start.tempY = -157
-        // }else{
-        //     start.tempX = 0
-        //     start.tempY = 0
-        // }
+        mapObject.selectedShop(shop_id)
     }
 
+   
+    floorSelect.addEventListener('input', fnSelectFloor, false)
+    floorSelect.addEventListener('DOMContentLoaded', fnSelectFloor) 
 
+    //층별 선택
+    function fnSelectFloor(e){
+        console.log(e.target.value)
+        const idx = e.target.value
+        mapObject = new ImgTouchCanvas({
+            canvas: document.getElementById('canvas'),
+            path: require("../assets/images/site_map_" + idx +".jpg"),
+            desktop: true,
+            shopNmPos : objShopMap[idx=='B1'?0:Number(idx)].shopNmPos
+        })
+    }
 
 })
+
+
 function fnShopMenuOpen(e){
     isActive.value =! isActive.value
 }
 
-function fnClickFloor(e){
-    isFloorActive.value =! isFloorActive.value
-    console.log('11111111', e)
-}
+
 
 // label.addEventListener('click', () => {
 //   if(label.parentNode.classList.contains('active')) {
@@ -99,7 +100,7 @@ function fnClickFloor(e){
         position : relative;
         z-index : 1;
         border:1px solid;
-        width:400px;
+        width:390px;
         height:550px;
         background-color:white;
         overflow: hidden;
@@ -137,9 +138,9 @@ function fnClickFloor(e){
         transition: all 0.3s ease-out;
     }
     .floor-select{
-        position: absolute; 
+        position: relative; 
         width:100px;
-        top:100px;
+        top:-530px;
         z-index: 10;
         left:20px;
         cursor: pointer;

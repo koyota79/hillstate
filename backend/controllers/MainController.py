@@ -20,13 +20,11 @@ def UrlParamMap(func):
 
 
 
-@mainHome.route('')
+@mainHome.route('/main')
 class MainHome(Resource):
-    @UrlParamMap
-    def post(self ,dataObj):    
-        print(dataObj ,dataObj["id"])   
-        self.params = dataObj #(dataObj["id"] ,'test')
-        return service.getList(self) 
+    def get(self ):    
+        print('MainHome')   
+        return service.getList() 
 
 
 @mainHome.route('shop_data/<shop_id>') 

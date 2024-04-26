@@ -1,5 +1,4 @@
 <template>
-<div style="margin-top:30px;"></div>
 <div class="new-container"></div>
     <div class="box" >
         <ul>

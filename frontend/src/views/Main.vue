@@ -44,7 +44,27 @@ function fnCategoryPageMove(event ,key){
     router.push({ name: 'Category' ,params: {'id': key}})  
 }
 
- 
+const $Axios = inject('Axios')
+$Axios.get('/api/main' ,{})
+.then((response) => {
+    //console.log(response);
+    console.log(response.data);
+
+    
+    // const v_list = response.data["shop_map_list"]
+    // for(var k = 0; k < this.contents.length; k++){
+    //     var v_tempArry = []
+    //     for (var i = 0 ;i < v_list.length; i++) {
+    //         if(k == v_list[i].position_area)//지역 위치와 같은 포지션만 세팅
+    //             v_tempArry.push(v_list[i])
+    //     }//end if
+    //     this.contents[k].shop_list  = v_tempArry 
+    // }//end if
+    //console.log(v_posArray)
+}).catch((error) => {
+    console.log(error);
+})
+
 
 // const cnt = ref(0)
 // const plus = () => { cnt.value++ }

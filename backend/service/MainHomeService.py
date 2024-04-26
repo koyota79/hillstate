@@ -42,14 +42,14 @@ class MainHomeService :
         # statement = mybatis_mapper2sql.get_child_statement(mapper,'selectShopList', reindent=True, strip_comments=False)
         # print(statement)
 
-    def getList(self ,dataObj ) :
+    def getList(self) :
         try :     
             self.queryId = "selectShopList"  
-            self.params = dataObj.params           
+            self.params = {}           
             list = excuteQuery.selectList(self)
         except Exception as e :
             print("service err",e)
-            return {"E" : "service err=" + e} 
+            return [] 
         return list
     
     #메인 슬라이드 이미지
