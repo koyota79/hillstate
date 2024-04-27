@@ -34,7 +34,9 @@
 
 import { ref, onMounted ,computed ,inject} from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
+const store = useStore()
 const router = useRouter()
 const v_categoryObj = inject('Category')
 
@@ -49,8 +51,17 @@ $Axios.get('/api/main' ,{})
 .then((response) => {
     //console.log(response);
     console.log(response.data);
-
-    
+    const objData = response.data
+    const shopObj = []
+    for(let i=0; i < objData.length;i++ ){
+        const item = objData[i]        
+        let shopId = {}
+        shopId[item.shop_id] = item
+        shopObj.push(shopId) 
+    }
+    //console.log(shopObj)
+    store.commit('setShopData' ,shopObj)
+    //console.log(store.state.shopData)
     // const v_list = response.data["shop_map_list"]
     // for(var k = 0; k < this.contents.length; k++){
     //     var v_tempArry = []

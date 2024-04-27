@@ -10,7 +10,7 @@ export default createStore({
         scrollYn : false
       },
       searchIcon : true,
-      shopData : {}
+      shopData : []
     },
     mutations: {
       setFloor(state ,floor) {
@@ -27,7 +27,7 @@ export default createStore({
         state.shopData  = data
       }
     },
-    plugins : [ createPersistedState({ paths: ["searchIcon"] }) ],
+    plugins : [ createPersistedState() ],
 });
 
 

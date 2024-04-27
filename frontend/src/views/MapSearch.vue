@@ -1,7 +1,7 @@
 <template>
     <div class="map-container">
         <div class="map"  id="site-map"> 
-            <canvas id="canvas" class="canvas" style="width: 400px; height: 550px"></canvas>
+            <canvas id="canvas" class="canvas" style="width: 400px; height: 650px"></canvas>
         </div>
         <div style="display:none;">
             <img id="source" src="../assets/images/site_map_2.jpg" />
@@ -27,20 +27,40 @@
 
 <script setup>
 import { ref, onMounted ,reactive  } from 'vue'
+import { useStore } from 'vuex'
 import { objShopMap ,fnFillText } from '../js/shopMap.js' 
 import {ImgTouchCanvas} from '../js/pinch-zoom.js'  
 const isActive      = ref(null)
+const store         = useStore()
+//console.log(store.state.shopData)
+const shopObj  = store.state.shopData
 
 onMounted(() => {  
     const floorSelect =  document.getElementById('floor')
     floorSelect.options[2].selected = true
+
+   
+    //맵위치와 상점 정보 합치기
+    function fnShopAssign(index){
+        for(let i=0; i< objShopMap[index].shopNmPos.length; i++){
+            const o = objShopMap[index].shopNmPos[i]
+            const item =  shopObj.find(function(data){ return data[o.shop_id] })
+
+            if(o.shop_id === objShopMap[index].shopNmPos[i].shop_id){
+                Object.assign(objShopMap[index].shopNmPos[i], item[o.shop_id]);
+            }
+        }
+        ///console.log(objShopMap[index].shopNmPos) 
+        return objShopMap[index].shopNmPos
+       
+    }
 
     //디폴드 이미지 생성
     let mapObject = new ImgTouchCanvas({
         canvas: document.getElementById('canvas'),
         path: require("../assets/images/site_map_2.jpg"),
         desktop: true,
-        shopNmPos : objShopMap[2].shopNmPos
+        shopNmPos : fnShopAssign(2) //objShopMap[2].shopNmPos
     })
 
 
@@ -69,7 +89,7 @@ onMounted(() => {
             canvas: document.getElementById('canvas'),
             path: require("../assets/images/site_map_" + idx +".jpg"),
             desktop: true,
-            shopNmPos : objShopMap[idx=='B1'?0:Number(idx)].shopNmPos
+            shopNmPos : fnShopAssign(idx=='B1'?0:Number(idx)) //objShopMap[idx=='B1'?0:Number(idx)].shopNmPos
         })
     }
 
@@ -94,14 +114,14 @@ function fnShopMenuOpen(e){
 
 <style scoped>
    .map-container{
-        padding:5px;
+        padding:1px;
     }
     .map{
         position : relative;
         z-index : 1;
-        border:1px solid;
-        width:390px;
-        height:550px;
+        /* border:1px solid; */
+        width:420px;
+        height:650px;
         background-color:white;
         overflow: hidden;
     }
@@ -112,7 +132,7 @@ function fnShopMenuOpen(e){
         position: fixed;
         width: 100%;
         max-width: 920px;
-        bottom: -239px;
+        bottom: -220px;
         z-index: 2;
         left: 50%;
         transform: translateX(-50%);
@@ -140,7 +160,7 @@ function fnShopMenuOpen(e){
     .floor-select{
         position: relative; 
         width:100px;
-        top:-530px;
+        top:-630px;
         z-index: 10;
         left:20px;
         cursor: pointer;
