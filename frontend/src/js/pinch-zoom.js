@@ -32,6 +32,8 @@ This code may be freely distributed under the MIT License
             x: 0.5,
             y: 0.5
         };
+        this.mousePos = {x : 0 ,y : 0 ,easeValue : 0.3 ,startX : 0 ,startY : 0}
+        this.calcPos  = {x : 0 ,y : 0}
         this.imgTexture = new Image();
         this.imgTexture.src = options.path;
  
@@ -158,13 +160,11 @@ This code may be freely distributed under the MIT License
  
         doMove: function(relativeX, relativeY) {
             if(this.lastX && this.lastY) {
-              var deltaX = relativeX - this.lastX;
-              var deltaY = relativeY - this.lastY;
-              var currentWidth = (this.imgTexture.width * this.scale.x);
-              var currentHeight = (this.imgTexture.height * this.scale.y);
+              var deltaX = (relativeX - this.lastX);
+              var deltaY = (relativeY - this.lastY);
  
-              this.position.x += deltaX;
-              this.position.y += deltaY;
+              this.position.x += deltaX * this.mousePos.easeValue;
+              this.position.y += deltaY * this.mousePos.easeValue;
  
  
               //edge cases
@@ -230,6 +230,7 @@ This code may be freely distributed under the MIT License
                     this.doZoom(this.gesturePinchZoom(e));
                 }
                 else if(e.targetTouches.length == 1) {
+         
                     var relativeX = e.targetTouches[0].pageX - this.canvas.getBoundingClientRect().left;
                     var relativeY = e.targetTouches[0].pageY - this.canvas.getBoundingClientRect().top;
                     this.doMove(relativeX, relativeY);
