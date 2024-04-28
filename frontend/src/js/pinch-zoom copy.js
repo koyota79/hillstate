@@ -21,8 +21,8 @@ This code may be freely distributed under the MIT License
         this.canvas.width   = this.canvas.clientWidth;
         this.canvas.height  = this.canvas.clientHeight;
         this.context        = this.canvas.getContext('2d');
-        this.divLayer       = options.dimLayer
-        this.desktop        = options.desktop || false; //non touch events
+ 
+        this.desktop = options.desktop || false; //non touch events
  
         this.position = {
             x: 0,
@@ -34,7 +34,7 @@ This code may be freely distributed under the MIT License
         };
         this.mousePos = {x : 0 ,y : 0 ,easeValue : 0.03 ,startX : 0 ,startY : 0}
         this.calcPos  = {x : 0 ,y : 0}
-        this.touchPos = {x : 0 ,y : 0 ,tempPosX : 0 , tempPosY : 0}
+        this.toouchPos = {x : 0 ,y : 0 ,tempPosX : 0 , tempPosY : 0}
         this.sTime     = 0
         this.draggingEnd = false
         this.calcSpeed = 0.0001
@@ -75,6 +75,9 @@ This code may be freely distributed under the MIT License
                     this.scale.x = scaleRatio;
                     this.scale.y = scaleRatio;
                     this.init = true;
+
+
+
 
                 }
             }
@@ -117,7 +120,6 @@ This code may be freely distributed under the MIT License
                 //console.log('drawImage')
                 //this.context.scale(scaleRatio,scaleRatio)
                 this.setFillText()
-                this.selectedShop()
                 requestAnimationFrame(this.animate.bind(this));
         },
  
@@ -231,46 +233,12 @@ This code may be freely distributed under the MIT License
                 let posX = (item.x * this.scale.x )
                 let posY = (item.y * this.scale.y )
                 for (let k = 0; k < lines.length; k++) {
-                    this.context.fillText(lines[k], (posX + this.position.x), (posY + this.position.y) + (k * lineheight));
+                    this.context.fillText(lines[k], (posX + this.position.x ), (posY + this.position.y) + (k * lineheight));
                 }
             }
 
         },
-        selectedShop :function(){
-           // console.log('this.shopIdPos', this.shopNmArryPos)
-
-            for(let i=0; i < this.shopNmArryPos.length; i++){
-                let item = this.shopNmArryPos[i]
-                this.shopIdPos[item.shop_id] = {x :item.px ,y : item.py} //매장 위치좌표
-                let posX = parseInt(item.x * this.scale.x )
-                let posY = parseInt(item.y * this.scale.y )
-           
-                let areaX1 = (posX + this.position.x) - parseInt( (item.mapW ) * this.scale.x )
-                let areaX2 = (posX + this.position.x) + parseInt( (item.mapW ) * this.scale.x )
-                let areaY1 = (posY + this.position.y) - parseInt( (item.mapH ) * this.scale.y )
-                let areaY2 = (posY + this.position.y) + parseInt( (item.mapH ) * this.scale.y ) 
-              //  console.log(areaX1 , 'selectedShop', areaY1)
-                this.context.beginPath()
-                this.context.moveTo(areaX1 , areaY1)
-                this.context.lineTo(areaX2 , areaY1)
-                this.context.lineTo(areaX2 , areaY2)
-                this.context.lineTo(areaX1 , areaY2)
-                this.context.stroke()
-
-     
-                if( (this.draggingEnd ) ){
-                    console.log(areaX1 ,areaX2, 'draggingEnd', this.calcPos.x )
-                        this.divLayer.classList.remove('btn-cloase')
-                        //const layerShopNm = document.getElementById('layer-title')
-                        //layerShopNm.innerHTML = item.shop_nm
-                        this.draggingEnd = false
-                }
-
-
-                
-            }
-        },
-        menuClickShop: function(idx) {
+        selectedShop: function(idx) {
             //this.context.fillText('test123',100,100)
             console.log('this.shopIdPos[idx]' ,this.shopIdPos[idx] )
             if(this.shopIdPos[idx].x == undefined)
@@ -286,11 +254,7 @@ This code may be freely distributed under the MIT License
                 this.lastX          = null;
                 this.lastY          = null;
                 this.lastZoomScale  = null;
-
-                this.calcPos.x      = e.touches[0].clientX - (this.position.x + this.canvas.getBoundingClientRect().left)
-                this.calcPos.y      = e.touches[0].clientY - (this.position.y + this.canvas.getBoundingClientRect().top)
-                console.log(this.calcPos.x , ' this.calcPos.x ' , this.calcPos.y)
-                //this.mousePos.easeValue = this.easeSpeed
+                this.mousePos.easeValue = this.easeSpeed
             }.bind(this));
  
             this.canvas.addEventListener('touchmove', function(e) {

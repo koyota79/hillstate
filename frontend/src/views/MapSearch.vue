@@ -14,6 +14,15 @@
                 <option value="3">3F</option>
             </select>
         </div>
+        <div class="dim-layer btn-close" id="dim-layer">
+            <div class="dimBg"></div>
+            <div class="pop-layer">
+                <p class="layer-title"></p>
+                <div class="btn-layerStart">출발</div>
+                <div class="btn-layerEnd">도착</div>
+                <div class="btn-r btn-layerClose">close</div>          
+            </div>
+        </div>
         <div class="menu-container" :class="[isActive ? 'menu-after' : '']">
             <div @click="fnShopMenuOpen($event)">매장 선택</div>
             <div class="menu-list">
@@ -55,15 +64,6 @@ onMounted(() => {
        
     }
 
-    //디폴드 이미지 생성
-    let mapObject = new ImgTouchCanvas({
-        canvas: document.getElementById('canvas'),
-        path: require("../assets/images/site_map_2.jpg"),
-        desktop: true,
-        shopNmPos : fnShopAssign(2) //objShopMap[2].shopNmPos
-    })
-
-
     //하단 메뉴 함수 셋팅
     const elements    = document.getElementsByClassName('fnClickShop');
     for (var i = 0; i < elements.length; i++) {
@@ -74,7 +74,7 @@ onMounted(() => {
     //하단 메뉴 클릭
     function fnClickShop(e){
         const shop_id = e.touches[0].target.dataset.id
-        mapObject.selectedShop(shop_id)
+        mapObject.menuClickShop(shop_id)
     }
 
    
@@ -93,14 +93,30 @@ onMounted(() => {
         })
     }
 
+
+    const layer = document.getElementById('dim-layer')
+    const closeBtn = document.getElementsByClassName('btn-layerClose')[0]
+    closeBtn.addEventListener('touchstart', e =>{
+        layer.classList.add('btn-close');
+    })
+
+
+    //디폴드 이미지 생성
+    let mapObject = new ImgTouchCanvas({
+        canvas: document.getElementById('canvas'),
+        path: require("../assets/images/site_map_2.jpg"),
+        dimLayer : layer,
+        desktop: true,
+        shopNmPos : fnShopAssign(2) //objShopMap[2].shopNmPos
+    })
+
+
 })
 
 
 function fnShopMenuOpen(e){
     isActive.value =! isActive.value
 }
-
-
 
 // label.addEventListener('click', () => {
 //   if(label.parentNode.classList.contains('active')) {
@@ -113,7 +129,67 @@ function fnShopMenuOpen(e){
 </script>
 
 <style scoped>
-   .map-container{
+
+    .pop-layer{
+        position :absolute;
+        top:50%;
+        left:25%;
+        width:250px;
+        height:130px;
+        background-color:#ffff;
+        border:5px solid #357185;        
+        z-index:10;
+    }
+    .dim-layer{
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        z-index:100;
+    }
+    .dim-layer .dimBg{
+        height:100%;
+        background:#000;
+        opacity:0.5;
+        filter:alpha(opacity=50);
+    }
+    .dim-layer .pop-layer{
+        display:block;
+    }
+    .pop-layer .btn-r{
+        width:100%;
+        margin:10px 0 20px;
+        padding-top:10px;
+        border-top:1px solid #DDD;
+        text-align:right;
+   }
+   .btn-layerStart{
+        display: inline-block;
+        height:25px;
+        padding: 0 14px 0;
+        border:1px solid #175969;
+        background-color:#09969b;
+        font-size:13px;
+        color:#fff;
+        line-height:25px;
+        margin-right: 10px;
+    }
+    .btn-layerEnd{
+        display: inline-block;
+        height:25px;
+        padding: 0 14px 0;
+        border:1px solid #6e1e5a;
+        background-color:#b607ad;
+        font-size:13px;
+        color:#fff;
+        line-height:25px;
+        margin-right: 10px;
+    }
+    .btn-close{
+        display:none;
+    }
+    .map-container{
         padding:1px;
     }
     .map{

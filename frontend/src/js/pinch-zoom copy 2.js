@@ -21,8 +21,8 @@ This code may be freely distributed under the MIT License
         this.canvas.width   = this.canvas.clientWidth;
         this.canvas.height  = this.canvas.clientHeight;
         this.context        = this.canvas.getContext('2d');
-        this.divLayer       = options.dimLayer
-        this.desktop        = options.desktop || false; //non touch events
+ 
+        this.desktop = options.desktop || false; //non touch events
  
         this.position = {
             x: 0,
@@ -32,16 +32,17 @@ This code may be freely distributed under the MIT License
             x: 0.5,
             y: 0.5
         };
-        this.mousePos = {x : 0 ,y : 0 ,easeValue : 0.03 ,startX : 0 ,startY : 0}
-        this.calcPos  = {x : 0 ,y : 0}
-        this.touchPos = {x : 0 ,y : 0 ,tempPosX : 0 , tempPosY : 0}
-        this.sTime     = 0
-        this.draggingEnd = false
-        this.calcSpeed = 0.0001
+        this.mousePos  = {x : 0 ,y : 0 ,easeValue : 0 ,startX : 0 ,startY : 0}
+        this.calcPos   = {x : 0 ,y : 0}
+        this.toouchPos = {x : 0 ,y : 0 ,tempPosX : 0 , tempPosY : 0}
         this.easeSpeed = 0.05
+        this.sTime     = 0
+        this.calcSpeed = 0.0001
+        this.draggingTrue = false
+        this.draggingEnd  = false
         this.imgTexture = new Image();
         this.imgTexture.src = options.path;
- 
+        
         this.lastZoomScale = null;
         this.lastX = null;
         this.lastY = null;
@@ -75,49 +76,45 @@ This code may be freely distributed under the MIT License
                     this.scale.x = scaleRatio;
                     this.scale.y = scaleRatio;
                     this.init = true;
-
                 }
             }
  
+            this.toouchPos.tempPosX = (this.mousePos.x - this.mousePos.startX) * this.mousePos.easeValue
+            this.toouchPos.tempPosY = (this.mousePos.y - this.mousePos.startY) * this.mousePos.easeValue
+
+            this.toouchPos.x += this.toouchPos.tempPosX
+            this.toouchPos.y += this.toouchPos.tempPosY
 
 
+            let elapsed = 0
+            //console.log('timestamp' , timestamp)
 
-            // let elapsed = 0
-            // if(this.sTime === 0){
-            //     this.sTime = timestamp
-            // }
+            if(this.sTime === 0){
+                this.sTime = timestamp
+            }
 
-            
-            // if(this.draggingEnd){
-            //     elapsed = parseInt(timestamp - this.sTime)
-            //     this.mousePos.easeValue = this.mousePos.easeValue - ((elapsed * 0.01) * this.calcSpeed )
-            //     this.position.x +=  (this.position.x<0?-1:1 * this.mousePos.easeValue);
-            //     this.position.y +=  (this.position.y<0?-1:1 * this.mousePos.easeValue);
-                
-            //     console.log(this.position.x , 'this.mousePos.easeValue',this.position.y )
-            //     if(this.mousePos.easeValue < 0){
-            //         this.mousePos.easeValue = 0
-            //         this.draggingEnd = false
-            //         this.sTime = 0
-            //     }
+            elapsed = parseInt(timestamp - this.sTime)
 
-            // }
+            if(this.draggingEnd){
+                this.mousePos.easeValue = this.mousePos.easeValue - ((elapsed * 0.01) * this.calcSpeed )
+                console.log('this.mousePos.easeValue', this.mousePos.easeValue)
+                if(this.mousePos.easeValue < 0){
+                    this.mousePos.easeValue = 0
+                    this.draggingEnd = false
+                    this.sTime = 0
+                }
+
+            }
 
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             //this.context.reset();
             this.context.drawImage(
                 this.imgTexture,
-                this.position.x, this.position.y,
+                this.toouchPos.x, this.toouchPos.y,
                 this.scale.x * this.imgTexture.width,
                 this.scale.y * this.imgTexture.height);
-                //     this.position.x, this.position.y,
-                //this.fillText('크린토피아',100,100)
-                //this.context.fillText('크린토피아1' , this.position.x, this.position.y)
-                //this.setFillText('크린토피아1' , 100, 100)
-                //console.log('drawImage')
-                //this.context.scale(scaleRatio,scaleRatio)
+      
                 this.setFillText()
-                this.selectedShop()
                 requestAnimationFrame(this.animate.bind(this));
         },
  
@@ -198,6 +195,10 @@ This code may be freely distributed under the MIT License
               this.position.x += deltaX;
               this.position.y += deltaY;
  
+              this.mousePos.x = relativeX
+              this.mousePos.y = relativeY
+
+              
               //edge cases
             //   if( this.position.x > 0 ) {
             //     this.position.x = 0;
@@ -231,53 +232,19 @@ This code may be freely distributed under the MIT License
                 let posX = (item.x * this.scale.x )
                 let posY = (item.y * this.scale.y )
                 for (let k = 0; k < lines.length; k++) {
-                    this.context.fillText(lines[k], (posX + this.position.x), (posY + this.position.y) + (k * lineheight));
+                    this.context.fillText(lines[k], (posX + this.toouchPos.x ), (posY + this.toouchPos.y) + (k * lineheight));
                 }
             }
 
         },
-        selectedShop :function(){
-           // console.log('this.shopIdPos', this.shopNmArryPos)
-
-            for(let i=0; i < this.shopNmArryPos.length; i++){
-                let item = this.shopNmArryPos[i]
-                this.shopIdPos[item.shop_id] = {x :item.px ,y : item.py} //매장 위치좌표
-                let posX = parseInt(item.x * this.scale.x )
-                let posY = parseInt(item.y * this.scale.y )
-           
-                let areaX1 = (posX + this.position.x) - parseInt( (item.mapW ) * this.scale.x )
-                let areaX2 = (posX + this.position.x) + parseInt( (item.mapW ) * this.scale.x )
-                let areaY1 = (posY + this.position.y) - parseInt( (item.mapH ) * this.scale.y )
-                let areaY2 = (posY + this.position.y) + parseInt( (item.mapH ) * this.scale.y ) 
-              //  console.log(areaX1 , 'selectedShop', areaY1)
-                this.context.beginPath()
-                this.context.moveTo(areaX1 , areaY1)
-                this.context.lineTo(areaX2 , areaY1)
-                this.context.lineTo(areaX2 , areaY2)
-                this.context.lineTo(areaX1 , areaY2)
-                this.context.stroke()
-
-     
-                if( (this.draggingEnd ) ){
-                    console.log(areaX1 ,areaX2, 'draggingEnd', this.calcPos.x )
-                        this.divLayer.classList.remove('btn-cloase')
-                        //const layerShopNm = document.getElementById('layer-title')
-                        //layerShopNm.innerHTML = item.shop_nm
-                        this.draggingEnd = false
-                }
-
-
-                
-            }
-        },
-        menuClickShop: function(idx) {
+        selectedShop: function(idx) {
             //this.context.fillText('test123',100,100)
             console.log('this.shopIdPos[idx]' ,this.shopIdPos[idx] )
             if(this.shopIdPos[idx].x == undefined)
                 return
 
-            this.position.x = this.shopIdPos[idx].x
-            this.position.y = this.shopIdPos[idx].y
+            this.toouchPos.x = this.shopIdPos[idx].x
+            this.toouchPos.y = this.shopIdPos[idx].y
 
         },
         setEventListeners: function() {
@@ -286,11 +253,11 @@ This code may be freely distributed under the MIT License
                 this.lastX          = null;
                 this.lastY          = null;
                 this.lastZoomScale  = null;
+       
+                this.mousePos.startX =  e.touches[0].clientX
+                this.mousePos.startY =  e.touches[0].clientY
+  
 
-                this.calcPos.x      = e.touches[0].clientX - (this.position.x + this.canvas.getBoundingClientRect().left)
-                this.calcPos.y      = e.touches[0].clientY - (this.position.y + this.canvas.getBoundingClientRect().top)
-                console.log(this.calcPos.x , ' this.calcPos.x ' , this.calcPos.y)
-                //this.mousePos.easeValue = this.easeSpeed
             }.bind(this));
  
             this.canvas.addEventListener('touchmove', function(e) {
@@ -300,7 +267,7 @@ This code may be freely distributed under the MIT License
                     this.doZoom(this.gesturePinchZoom(e));
                 }
                 else if(e.targetTouches.length == 1) {
-         
+                    this.mousePos.easeValue = this.easeSpeed
                     var relativeX = e.targetTouches[0].pageX - this.canvas.getBoundingClientRect().left;
                     var relativeY = e.targetTouches[0].pageY - this.canvas.getBoundingClientRect().top;
                     this.doMove(relativeX, relativeY);
@@ -310,7 +277,9 @@ This code may be freely distributed under the MIT License
  
             this.canvas.addEventListener('touchend', function(e) {
                 e.preventDefault();    
+                //this.mousePos.easeValue = 0
                 this.draggingEnd = true
+                
             }.bind(this));
 
 
