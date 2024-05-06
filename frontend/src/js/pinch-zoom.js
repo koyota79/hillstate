@@ -23,6 +23,7 @@ This code may be freely distributed under the MIT License
         this.context        = this.canvas.getContext('2d');
         this.divLayer       = options.dimLayer
         this.desktop        = options.desktop || false; //non touch events
+        this.isActive       = options.isActive
  
         this.position = {
             x: 0,
@@ -34,24 +35,31 @@ This code may be freely distributed under the MIT License
         };
         this.mousePos = {x : 0 ,y : 0 ,easeValue : 0.03 ,startX : 0 ,startY : 0}
         this.calcPos  = {x : 0 ,y : 0}
-        this.touchPos = {x : 0 ,y : 0 ,tempPosX : 0 , tempPosY : 0}
+        this.markerPos = {}
+        this.touchPos = {x : 0 ,y : 0 ,tempPosX : 0 , tempPosY : 0 ,touchBetween : {x:0,y:0} ,rotationAngle : 0}
         this.sTime     = 0
-        this.draggingEnd = false
+        this.dragging = 0
+        this.zoomCutLine = {s : 0.25 ,isTrue : true}
         this.calcSpeed = 0.0001
         this.easeSpeed = 0.05
         this.imgTexture = new Image();
         this.imgTexture.src = options.path;
- 
+
+        this.markerImage = new Image();
+        this.markerImage.src = require("../assets/images/marker2.jpg");
+        this.markerShow = null;
+        
         this.lastZoomScale = null;
         this.lastX = null;
         this.lastY = null;
  
         this.mdown = false; //desktop drag
-        this.fontSize = 20
-
+        this.fontSize = 30
+        this.zoomFade = 0
         this.init = false;
         this.shopNmArryPos = options.shopNmPos
         this.shopIdPos = {}
+        this.isPinch = false
         this.checkRequestAnimationFrame();
         requestAnimationFrame(this.animate.bind(this));
  
@@ -87,43 +95,33 @@ This code may be freely distributed under the MIT License
             //     this.sTime = timestamp
             // }
 
-            
-            // if(this.draggingEnd){
-            //     elapsed = parseInt(timestamp - this.sTime)
-            //     this.mousePos.easeValue = this.mousePos.easeValue - ((elapsed * 0.01) * this.calcSpeed )
-            //     this.position.x +=  (this.position.x<0?-1:1 * this.mousePos.easeValue);
-            //     this.position.y +=  (this.position.y<0?-1:1 * this.mousePos.easeValue);
-                
-            //     console.log(this.position.x , 'this.mousePos.easeValue',this.position.y )
-            //     if(this.mousePos.easeValue < 0){
-            //         this.mousePos.easeValue = 0
-            //         this.draggingEnd = false
-            //         this.sTime = 0
-            //     }
 
-            // }
+            //this.touchPos.rotationAngle = 45
+            //this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.reset();
+            // this.context.translate(this.position.x  , this.position.y);
 
-            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            //this.context.reset();
+            //this.doRotate()
+            this.context.translate(this.position.x ,this.position.y);
             this.context.drawImage(
                 this.imgTexture,
-                this.position.x, this.position.y,
+                0, 0,
                 this.scale.x * this.imgTexture.width,
                 this.scale.y * this.imgTexture.height);
-                //     this.position.x, this.position.y,
-                //this.fillText('크린토피아',100,100)
-                //this.context.fillText('크린토피아1' , this.position.x, this.position.y)
-                //this.setFillText('크린토피아1' , 100, 100)
-                //console.log('drawImage')
-                //this.context.scale(scaleRatio,scaleRatio)
-                this.setFillText()
-                this.selectedShop()
-                requestAnimationFrame(this.animate.bind(this));
+            this.context.translate(-this.position.x ,-this.position.y);
+
+       
+            this.selectedShop()
+            if(this.markerShow != null){
+                this.markerDraw(this.markerShow)
+            }
+            this.setFillText()
+              // this.touchPos.rotationAngle = this.touchPos.rotationAngle + 1
+            requestAnimationFrame(this.animate.bind(this));
         },
- 
         gesturePinchZoom: function(event) {
             var zoom = false;
- 
+  
             if( event.targetTouches.length >= 2 ) {
                 var p1 = event.targetTouches[0];
                 var p2 = event.targetTouches[1];
@@ -134,6 +132,8 @@ This code may be freely distributed under the MIT License
                 }
  
                 this.lastZoomScale = zoomScale;
+                this.touchPos.touchBetween.x = (p2.pageX - p1.pageX) / 2
+                this.touchPos.touchBetween.y = (p2.pageY - p1.pageY) / 2
             }
  
             return zoom;
@@ -141,18 +141,21 @@ This code may be freely distributed under the MIT License
  
         doZoom: function(zoom) {
             if(!zoom) return;
- 
+           // console.log('zoom = ' , this.scale.x)
             //new scale
             var currentScale = this.scale.x;
             var newScale = this.scale.x + zoom/400;
  
- 
+            //최소 줌 스케일
+            if(newScale <= this.zoomCutLine.s -0.01 ){
+                return
+            }
             //some helpers
-            var deltaScale = newScale - currentScale;
+            var deltaScale      = newScale - currentScale;
             var currentWidth    = (this.imgTexture.width * this.scale.x);
             var currentHeight   = (this.imgTexture.height * this.scale.y);
-            var deltaWidth  = this.imgTexture.width*deltaScale;
-            var deltaHeight = this.imgTexture.height*deltaScale;
+            var deltaWidth      = this.imgTexture.width*deltaScale;
+            var deltaHeight     = this.imgTexture.height*deltaScale;
  
  
             //by default scale doesnt change position and only add/remove pixel to right and bottom
@@ -173,7 +176,8 @@ This code may be freely distributed under the MIT License
  
 			//console.log(newPosX  , newPosY)
 
-            // if( newWidth < this.canvas.clientWidth ) return;
+
+            //if( newWidth < this.canvas.clientWidth ) return;
             // if( newPosX > 0 ) { newPosX = 0; }
             // if( newPosX + newWidth < this.canvas.clientWidth ) { newPosX = this.canvas.clientWidth - newWidth;}
  
@@ -189,8 +193,21 @@ This code may be freely distributed under the MIT License
             this.position.x = newPosX;
             this.position.y = newPosY;
         },
- 
+        doRotate : function() {
+            if(this.touchPos.rotationAngle != 0 ){
+           
+                var canvasmiddleX = this.canvas.clientWidth / 2;
+                var canvasmiddleY = this.canvas.clientHeight / 2;
+
+
+                this.context.translate(this.position.x + canvasmiddleX , this.position.y + canvasmiddleY);
+                this.context.rotate(this.touchPos.rotationAngle * (Math.PI/180));
+                this.context.translate(- (this.position.x + canvasmiddleX) , - (this.position.y + canvasmiddleY) );
+            }
+
+        },
         doMove: function(relativeX, relativeY) {
+
             if(this.lastX && this.lastY) {
               var deltaX = (relativeX - this.lastX);
               var deltaY = (relativeY - this.lastY);
@@ -198,6 +215,19 @@ This code may be freely distributed under the MIT License
               this.position.x += deltaX;
               this.position.y += deltaY;
  
+              var currentWidth    = (this.imgTexture.width * this.scale.x);
+              var currentHeight   = (this.imgTexture.height * this.scale.y);
+              var zoomWidth       = (this.canvas.width * this.scale.x)
+
+            //   if( (this.position.x + currentWidth) < this.canvas.clientWidth ) {
+                
+            //       this.position.x = this.canvas.clientWidth - currentWidth;
+            //       console.log('(this.position.x + currentWidth)' , this.position.x)
+            //   }
+
+            //   if( this.position.y + currentHeight < this.canvas.clientHeight ) {
+            //     this.position.y = this.canvas.clientHeight - currentHeight;
+            //   }
               //edge cases
             //   if( this.position.x > 0 ) {
             //     this.position.x = 0;
@@ -211,6 +241,7 @@ This code may be freely distributed under the MIT License
             //   else if( this.position.y + currentHeight < this.canvas.clientHeight ) {
             //     this.position.y = this.canvas.clientHeight - currentHeight;
             //   }
+            
             }
  
             this.lastX = relativeX;
@@ -219,65 +250,133 @@ This code may be freely distributed under the MIT License
         setFillText: function() {
             //this.context.fillText('test123',100,100)
 
-            let fontSize = 30 * this.scale.y 
-            this.context.font = fontSize + "px NanumGothic";
+            let tfontSize = this.fontSize * this.scale.x 
+            this.context.font = tfontSize + "px NanumGothic";
             this.context.fillStyle = "black";
             const lineheight = 15;
-    
-            for(let i=0; i < this.shopNmArryPos.length; i++){
+            let floor = ''
+            if(this.scale.x <=  this.zoomCutLine.s  ){
+                this.context.globalAlpha = 0
+               //this.zoomCutLine.isTrue = false
+            }
+
+            for(let i = 0; i < this.shopNmArryPos.length; i++){
+
                 let item = this.shopNmArryPos[i]
-                this.shopIdPos[item.shop_id] = {x :item.px ,y : item.py} //매장 위치좌표
+                this.shopIdPos[item.shop_id] = {x : item.x ,y : item.y ,px :item.px ,py : item.py} //매장 위치좌표
                 let lines = item.shop_nm.split('\n');
                 let posX = (item.x * this.scale.x )
                 let posY = (item.y * this.scale.y )
                 for (let k = 0; k < lines.length; k++) {
                     this.context.fillText(lines[k], (posX + this.position.x), (posY + this.position.y) + (k * lineheight));
                 }
+                floor = item.position //층별
             }
+
+
+            //상점명이 사라지기전에 층 호수 fade 시작하기 위해 0.07을 더한다
+            if(this.scale.x <=  (this.zoomCutLine.s+0.07) ){
+                this.zoomFade = 0
+                //0부터 시작하기 위해 scale 값이 0.6이므로 차감하고 시작,4배수 
+                this.zoomFade += ((( (1 - Math.abs(this.scale.x) )) -0.6).toFixed(2) * 4 ) 
+                let alpha  = this.zoomFade >= 0.6 ? 1 : this.zoomFade
+                this.context.globalAlpha =  alpha
+
+                let tfontSize = 275 * this.scale.x 
+                this.context.font = tfontSize + "px NanumGothic";
+
+                let fx = (580 * this.scale.x) 
+                let fy = (730 * this.scale.y) 
+                this.context.fillText(floor +'F' , ( fx + this.position.x) ,( fy + this.position.y )) 
+            }
+
+        
 
         },
         selectedShop :function(){
-           // console.log('this.shopIdPos', this.shopNmArryPos)
-
+            //console.log('this.zoomFade', this.zoomFade)
             for(let i=0; i < this.shopNmArryPos.length; i++){
                 let item = this.shopNmArryPos[i]
-                this.shopIdPos[item.shop_id] = {x :item.px ,y : item.py} //매장 위치좌표
-                let posX = parseInt(item.x * this.scale.x )
-                let posY = parseInt(item.y * this.scale.y )
+                //this.shopIdPos[item.shop_id] = {x :item.px ,y : item.py} //매장 위치좌표
+                let posX = (item.x * this.scale.x ) //parseInt(item.x * this.scale.x )
+                let posY = ((item.y - this.fontSize) * this.scale.y) //parseInt(item.y * this.scale.y )
            
-                let areaX1 = (posX + this.position.x) - parseInt( (item.mapW ) * this.scale.x )
-                let areaX2 = (posX + this.position.x) + parseInt( (item.mapW ) * this.scale.x )
-                let areaY1 = (posY + this.position.y) - parseInt( (item.mapH ) * this.scale.y )
-                let areaY2 = (posY + this.position.y) + parseInt( (item.mapH ) * this.scale.y ) 
-              //  console.log(areaX1 , 'selectedShop', areaY1)
-                this.context.beginPath()
-                this.context.moveTo(areaX1 , areaY1)
-                this.context.lineTo(areaX2 , areaY1)
-                this.context.lineTo(areaX2 , areaY2)
-                this.context.lineTo(areaX1 , areaY2)
-                this.context.stroke()
+                let areaX1 = (posX + this.position.x) //- parseInt(item.mapW * this.scale.x ) 
+                let areaX2 = (posX + this.position.x + (item.mapW * this.scale.x) )   //(posX + this.position.x) + parseInt(item.mapW * this.scale.x ) 
+                let areaY1 = (posY + this.position.y) //- parseInt(item.mapH * this.scale.y )
+                let areaY2 = (posY + this.position.y + (item.mapH * this.scale.y) )  //(posY + this.position.y) + parseInt(item.mapH * this.scale.y ) 
 
-     
-                if( (this.draggingEnd ) ){
-                    console.log(areaX1 ,areaX2, 'draggingEnd', this.calcPos.x )
-                        this.divLayer.classList.remove('btn-cloase')
-                        //const layerShopNm = document.getElementById('layer-title')
-                        //layerShopNm.innerHTML = item.shop_nm
-                        this.draggingEnd = false
+                let calcX = this.calcPos.x + this.position.x
+                let calcY = this.calcPos.y + this.position.y
+
+                //console.log('this.context.globalAlpha' , this.context.globalAlpha)
+
+                if(this.scale.x <=  this.zoomCutLine.s ){//최소줌일경우
+                    this.markerImage.width = 0
+                    this.markerImage.height = 0
+                }else{
+                    this.markerImage.width = 80
+                    this.markerImage.height = 80
                 }
 
 
+                //마커 위치
+                this.markerPos[item.shop_id] = {'x': posX, 'y': posY - ((this.markerImage.height)* this.scale.y)  }
+
+              //  console.log(areaX1 , 'selectedShop', areaY1)
+                // this.context.beginPath()
+                // this.context.moveTo(areaX1 , areaY1)
+                // this.context.lineTo(areaX2 , areaY1)
+                // this.context.lineTo(areaX2 , areaY2)
+                // this.context.lineTo(areaX1 , areaY2)
+                // this.context.stroke()
+
+   
+                if( (this.dragging == 0 && this.isPinch) &&  (areaX1 <= calcX && areaX2 >= calcX && 
+                    areaY1 <= calcY && areaY2 >= calcY)  ){ //&& this.calcPos.x == calcX
+                    this.divLayer.classList.remove('btn-close')
+                    const layerShopNm = document.getElementById('layer-title')
+                    layerShopNm.innerHTML = item.shop_nm
+                    const layerShopDetail = document.getElementById('layer-cont')
+                    let shopInfo = '위치 : ' + item.position +'층 (' +  item.position_nm + ') 구역 <br> 영업시간 : ' + item.open_time + ' ~ ' + item.close_time
+                    layerShopDetail.innerHTML = shopInfo
+                    this.dragging = 1 
+                    this.markerShow  = null //이미지 마커
+                    this.isActive.value = false //하단 메뉴 숨기기
+
+                }
                 
             }
         },
-        menuClickShop: function(idx) {
-            //this.context.fillText('test123',100,100)
-            console.log('this.shopIdPos[idx]' ,this.shopIdPos[idx] )
-            if(this.shopIdPos[idx].x == undefined)
+        imgMarker : function(id){
+            console.log('shopPos' , this.markerPos[id])
+            this.markerShow = id
+            //console.log('this.touchPos.touchBetween' , this.touchPos.touchBetween)
+           
+        },
+        markerDraw(id){
+            let pos = this.markerPos[id]
+
+            this.context.drawImage(
+                this.markerImage,
+                this.position.x + pos.x , this.position.y + pos.y ,
+                this.scale.x * this.markerImage.width,
+                this.scale.y * this.markerImage.height
+            );  
+        },
+        menuClickShop: function(id) {
+            console.log('this.shopIdPos[idx]' ,this.shopIdPos[id] )
+            if(this.shopIdPos[id] === undefined || this.shopIdPos[id] === 'undefined')
                 return
 
-            this.position.x = this.shopIdPos[idx].x
-            this.position.y = this.shopIdPos[idx].y
+            this.markerImage.width = 80
+            this.markerImage.height = 80
+
+            this.scale.x  = 0.5
+            this.scale.y  = 0.5
+            this.position.x = this.shopIdPos[id].px
+            this.position.y = this.shopIdPos[id].py
+            this.imgMarker(id)
 
         },
         setEventListeners: function() {
@@ -286,31 +385,50 @@ This code may be freely distributed under the MIT License
                 this.lastX          = null;
                 this.lastY          = null;
                 this.lastZoomScale  = null;
-
+                this.isPinch        = false
+                this.dragging       = 0
                 this.calcPos.x      = e.touches[0].clientX - (this.position.x + this.canvas.getBoundingClientRect().left)
                 this.calcPos.y      = e.touches[0].clientY - (this.position.y + this.canvas.getBoundingClientRect().top)
                 console.log(this.calcPos.x , ' this.calcPos.x ' , this.calcPos.y)
+
+
+                if(e.targetTouches.length > 1) {
+                    console.log('tyleof' ,typeof e.rotation)
+                }
+                //this.touchPos.startAngle = Math.atan2(e.touches[0].clientY - canvas.height / 2, e.touches[0].clientX - canvas.width / 2);
+                
                 //this.mousePos.easeValue = this.easeSpeed
             }.bind(this));
  
             this.canvas.addEventListener('touchmove', function(e) {
                 e.preventDefault();
- 
+                 
                 if(e.targetTouches.length == 2) { //pinch
+                    this.isPinch = false
                     this.doZoom(this.gesturePinchZoom(e));
+                    // this.touchPos.currentAngle = Math.atan2(e.touches[0].clientY - this.canvas.height / 2, e.touches[0].clientX - this.canvas.width / 2);
+                    // this.touchPos.rotationAngle = (this.touchPos.currentAngle - this.touchPos.startAngle) ;
                 }
                 else if(e.targetTouches.length == 1) {
-         
                     var relativeX = e.targetTouches[0].pageX - this.canvas.getBoundingClientRect().left;
-                    var relativeY = e.targetTouches[0].pageY - this.canvas.getBoundingClientRect().top;
-                    this.doMove(relativeX, relativeY);
+                    var relativeY = e.targetTouches[0].pageY - this.canvas.getBoundingClientRect().top; 
+                    let scaleSizeX = 0
+                    let scaleSizeX2 = 0
+                    scaleSizeX = parseInt( (this.canvas.width * this.scale.x )) * 6
+                    scaleSizeX2 = parseInt( ((this.canvas.width * 2) * this.scale.x ))
+                    console.log(this.position.x , 'scaleSizeX' , scaleSizeX2 )
+                    if(this.position.x < -(this.position.x  +  scaleSizeX) ){
+                       this.position.x = -(this.position.x  +  scaleSizeX) 
+                    }
 
+                    this.doMove(relativeX, relativeY);
                 }
+                this.dragging = relativeX
             }.bind(this));
  
             this.canvas.addEventListener('touchend', function(e) {
                 e.preventDefault();    
-                this.draggingEnd = true
+                this.isPinch  = true
             }.bind(this));
 
 

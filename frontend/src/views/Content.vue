@@ -1,18 +1,24 @@
 <template>
 <div class="new-container"></div>
     <div class="box" >
+        <div>
+            <img width="350px" height="300px" src = "../assets/images/new/new1.png"/>
+        </div>
+        <div>
+            <img width="350px" height="300px" src = "../assets/images/new/new2.png"/>
+        </div>
         <ul>
             <li>
                 <div class="new-shop"><h2>힐스테이트 헬스장</h2></div>
                 <div class="cont-desc"> 
-                    <p class="cont-desc-item1"><span>B1</span>헬스장 신규오픈</p>
+                    <p class="cont-desc-item1"><span>B1</span>헬스장 신규오픈 5월 예정</p>
                     <p class="cont-desc-item2">500평규모의 복합 헬스커뮤니티</p>
                 </div>
             </li>
             <li>
                 <div class="new-shop"><h2>힐스 카페</h2></div>
                 <div class="cont-desc"> 
-                    <p class="cont-desc-item1"><span>1F</span>카페 신규오픈</p>
+                    <p class="cont-desc-item1"><span>1F</span>카페 신규오픈 5월 초오픈</p>
                     <p class="cont-desc-item2">아기자기한 디저트 카페</p>
                 </div>
             </li>            

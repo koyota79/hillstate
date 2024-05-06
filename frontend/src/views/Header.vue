@@ -5,34 +5,33 @@
         <div v-show="v_classActive =! v_classActive" class="arrow-prev"  @click="fnRouterBack()"></div>
     </div>    
     <top-logo  @click="fnGoMovePage($event)" ></top-logo>
-    <search  ref="v_showSearch"></search>
+    <search  ref="r_showSearch"></search>
     <!-- <img width="160px" src = "../assets/images/logo_hanam.png" /> -->
   </div>
   <!-- <side-menu></side-menu> -->
 </template>
 
 <script setup>
-  import { ref, onMounted ,inject  ,watch  } from 'vue'
+  import { ref, onMounted ,onUnmounted  } from 'vue'
   import { useRoute ,useRouter } from 'vue-router'
-  import { useStore } from 'vuex'
-  const store = useStore()
-
   let url = history.state.current
   let v_classActive =  url.search('/shop_info')==0?false:true
-
   //console.log('::watch:::::::::::::::' ,url , url.search('/shop_info')==0?false:true)
-
   const router = useRouter()
   function fnGoMovePage(event) {      
     if(event){
+      const v_hidden = document.getElementsByTagName('body')
+      if(v_hidden[0]){
+        v_hidden[0].classList.remove('hidden')
+      }
       router.push({ path: '/' })
     }
 
   }
 
-  const v_showSearch = ref(null)
+  const r_showSearch = ref(null)
   function fnShowSearch(e){
-    v_showSearch.value.fnShowSearch(e, true)
+    r_showSearch.value.fnChildShowSearch(e, true)
       //this.$emit('fnParentScrollYn', p_classBind);
       //this.$Store.commit('setScrollToggle')
   } 
@@ -50,10 +49,12 @@
   //       console.log('::watch:::::::::::::::' ,newX , newY)
   // })
   onMounted(() => {
-    //v_classActive = store.state.searchIcon 
-    //console.log('store.state.searchIcon22222' , v_classActive)
-
   });
+
+  // onUnmounted(() => {  
+  //    console.log('onUnmounted')
+  //     store.commit('setSearchIcon' ,false)
+  // })//end mounted
 
 </script>
 <style scoped>

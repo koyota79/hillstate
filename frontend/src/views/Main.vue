@@ -1,7 +1,7 @@
 
 <template>
     <div class="main-cont">
-        <img src = "../assets/images/special_map.png"/>
+        <router-link :to="{name : 'MapSearch' ,params : {id:2001}}" ><img src = "../assets/images/special_map.png"/></router-link>
         <div class="brand_event">
             <h3>브랜드 이벤트</h3>
         </div>
@@ -30,15 +30,15 @@
        <footer-cont></footer-cont>
    </div>
 </template>
-<script setup>
-
+<script setup> 
 import { ref, onMounted ,computed ,inject} from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
-const store = useStore()
-const router = useRouter()
+const store         = useStore()
+const router        = useRouter()
 const v_categoryObj = inject('Category')
+
 
 function fnCategoryPageMove(event ,key){
     //console.log('event' ,event ,key ,router )
@@ -46,21 +46,27 @@ function fnCategoryPageMove(event ,key){
     router.push({ name: 'Category' ,params: {'id': key}})  
 }
 
+const emit = defineEmits(["toggle-loading"]);
+emit('toggle-loading', true);
 const $Axios = inject('Axios')
 $Axios.get('/api/main' ,{})
 .then((response) => {
     //console.log(response);
     console.log(response.data);
-    const objData = response.data
-    const shopObj = []
+    const objData       = response.data
+    const shopObj       = []
+    const shopSimpleObj = []
     for(let i=0; i < objData.length;i++ ){
         const item = objData[i]        
         let shopId = {}
         shopId[item.shop_id] = item
         shopObj.push(shopId) 
+        shopSimpleObj.push({key : item.shop_id ,name : item.shop_nm}) 
     }
-    //console.log(shopObj)
+    //console.log('shopSimpleObj' , shopSimpleObj)
     store.commit('setShopData' ,shopObj)
+    store.commit('setShopSimpleData' ,shopSimpleObj)
+
     //console.log(store.state.shopData)
     // const v_list = response.data["shop_map_list"]
     // for(var k = 0; k < this.contents.length; k++){
@@ -74,26 +80,10 @@ $Axios.get('/api/main' ,{})
     //console.log(v_posArray)
 }).catch((error) => {
     console.log(error);
+}).finally(() => {
+   emit('toggle-loading', false);
 })
-
-
-// const cnt = ref(0)
-// const plus = () => { cnt.value++ }
-// const rawHtml = '<div style="color: red;">HTML 출력</div>'
-
-// const user = {
-//   name: 'HEROPY',
-//   age: 85
-// }
-// const refUser = ref(user)
-// const reactiveUser = reactive(user) //Watch 사용못함
-
-// console.log(refUser.value.name) // 'HEROPY'
-// console.log(reactiveUser.name) // 'HEROPY'
-
-
 </script>
-
 <style>
     .main-cont{
         padding:10px;

@@ -15,6 +15,8 @@
     </body>
   </div>
 </template>
+<script setup>
+</script>
 <style>
   /* 반응형 최대크기 */
   #app { margin:0 auto; width:468px; min-height:100%; border-left:1px #D8D8D8 solid; border-right:1px #D8D8D8 solid; text-align:center; }

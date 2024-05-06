@@ -57,7 +57,7 @@ const routes = [
               component: ()=> Category
             },     
             { 
-              path: '/mapSearch',
+              path: '/mapSearch/:id',
               name: 'MapSearch',
               props : true,
               component: ()=> MapSearch

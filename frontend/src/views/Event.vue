@@ -1,10 +1,16 @@
 <template>
-    <div class="event"> Event 
+    <div class="event"> 
+        <div>
+            <p style="font-weight: bold;font-size: 20px;">이벤트</p>
+        </div>
         <div>
             <img width="350px" src="../assets/images/event/event_1.png" />
         </div>
         <div class="margin_top">
             <img width="350px" src="../assets/images/event/event_2.png" />
+        </div>
+        <div class="margin_top">
+            <img width="350px" src="../assets/images/event/event2.png" />
         </div>
     </div>
 </template>

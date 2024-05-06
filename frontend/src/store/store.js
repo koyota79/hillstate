@@ -10,7 +10,9 @@ export default createStore({
         scrollYn : false
       },
       searchIcon : true,
-      shopData : []
+      shopData : [],
+      shopSimPleData : {},
+      overFlow : false,
     },
     mutations: {
       setFloor(state ,floor) {
@@ -25,7 +27,19 @@ export default createStore({
       },
       setShopData (state ,data) {
         state.shopData  = data
-      }
+      },
+      setShopSimpleData(state ,data){
+        state.shopSimPleData  = data
+      },
+      setOverFlow(state ,isTrue){ //스크롤 차단
+        state.overFlow = isTrue
+        const v_hidden = document.getElementsByTagName('body')
+        if(isTrue){
+          v_hidden[0].classList.add('hidden')
+        }else{
+          v_hidden[0].classList.remove('hidden')
+        }
+      },
     },
     plugins : [ createPersistedState() ],
 });
