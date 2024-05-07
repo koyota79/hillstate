@@ -18,15 +18,12 @@
   let v_classActive =  url.search('/shop_info')==0?false:true
   //console.log('::watch:::::::::::::::' ,url , url.search('/shop_info')==0?false:true)
   const router = useRouter()
-  function fnGoMovePage(event) {      
-    if(event){
-      const v_hidden = document.getElementsByTagName('body')
-      if(v_hidden[0]){
-        v_hidden[0].classList.remove('hidden')
-      }
+  const route  = useRoute()
+  
+  function fnGoMovePage(e) {      
+    if(e){
       router.push({ path: '/' })
     }
-
   }
 
   const r_showSearch = ref(null)
@@ -41,7 +38,6 @@
   // })
 
   function fnRouterBack(){
-    //store.commit('setSearchIcon' ,true)
     router.go(-1)
   }
 
@@ -49,6 +45,15 @@
   //       console.log('::watch:::::::::::::::' ,newX , newY)
   // })
   onMounted(() => {
+    console.log('route' , route.name)
+
+    const v_hidden = document.getElementsByTagName('body')
+    if(route.name != 'MapSearch'){
+      if(v_hidden[0]){
+        v_hidden[0].classList.remove('hidden')
+      }
+    }
+
   });
 
   // onUnmounted(() => {  

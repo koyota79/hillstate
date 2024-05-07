@@ -60,6 +60,10 @@ This code may be freely distributed under the MIT License
         this.shopNmArryPos = options.shopNmPos
         this.shopIdPos = {}
         this.isPinch = false
+        this.targetX = 0;  // 목표 x 좌표
+        this.speed = 5;  // 이동 속도
+
+
         this.checkRequestAnimationFrame();
         requestAnimationFrame(this.animate.bind(this));
  
@@ -111,12 +115,23 @@ This code may be freely distributed under the MIT License
             this.context.translate(-this.position.x ,-this.position.y);
 
        
+       
             this.selectedShop()
             if(this.markerShow != null){
                 this.markerDraw(this.markerShow)
             }
             this.setFillText()
               // this.touchPos.rotationAngle = this.touchPos.rotationAngle + 1
+            // if (this.dragging > 1 ) {
+                
+            //     if(this.position.x >= 0){
+            //         this.position.x = (this.position.x  + this.speed )
+            //         if (this.position.x < this.targetX ) this.position.x = this.targetX ;
+            //     }else{
+            //         this.position.x =  -(Math.abs(this.position.x ) + this.speed )
+            //         if (this.position.x > this.targetX ) this.position.x = this.targetX ;
+            //     }
+            // }
             requestAnimationFrame(this.animate.bind(this));
         },
         gesturePinchZoom: function(event) {
@@ -414,12 +429,18 @@ This code may be freely distributed under the MIT License
                     var relativeY = e.targetTouches[0].pageY - this.canvas.getBoundingClientRect().top; 
                     let scaleSizeX = 0
                     let scaleSizeX2 = 0
-                    scaleSizeX = parseInt( (this.canvas.width * this.scale.x )) * 6
-                    scaleSizeX2 = parseInt( ((this.canvas.width * 2) * this.scale.x ))
-                    console.log(this.position.x , 'scaleSizeX' , scaleSizeX2 )
+                        scaleSizeX  = parseInt( (this.canvas.width * this.scale.x )) * 6
+                        scaleSizeX2 = parseInt( ((this.canvas.width) * (this.scale.x * 2) )) 
+                        console.log(scaleSizeX, 'scaleSizeX' , (scaleSizeX2 - 50) , '::position::' ,this.position.x )
                     if(this.position.x < -(this.position.x  +  scaleSizeX) ){
                        this.position.x = -(this.position.x  +  scaleSizeX) 
+                    }else if(this.position.x >= (scaleSizeX2 - 50) ){
+                        this.position.x = (scaleSizeX2 - 50)
+               
+                        
                     }
+
+                    
 
                     this.doMove(relativeX, relativeY);
                 }
@@ -428,6 +449,7 @@ This code may be freely distributed under the MIT License
  
             this.canvas.addEventListener('touchend', function(e) {
                 e.preventDefault();    
+                this.targetX = (30 + Math.abs(this.position.x))
                 this.isPinch  = true
             }.bind(this));
 
