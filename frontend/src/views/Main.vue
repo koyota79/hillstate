@@ -1,13 +1,17 @@
 
 <template>
     <div class="main-cont">
-        <router-link :to="{name : 'MapSearch' ,params : {id:2001}}" ><img src = "../assets/images/special_map.png"/></router-link>
+        <div class="new-shop"></div>
+            <router-link :to="{name : 'ShopDetail' ,params : {id : 'B1001'}}" ><img src = "../assets/images/daiso_img.png"/></router-link>
+        <div class="new-shop"></div>
+            <router-link :to="{name : 'ShopDetail' ,params : {id : '3001'}}" ><img src = "../assets/images/cineq_img.jpg"/></router-link>
         <div class="brand_event">
             <h3>브랜드 이벤트</h3>
         </div>
         <div class="main_img">
             <router-link to="Event"><img src = "../assets/images/event1.jpg"/></router-link>
         </div>
+            <router-link :to="{name : 'MapSearch'  ,params : {id : '0000'}}" ><img src = "../assets/images/special_map.png"/></router-link>
         <div class="main-category">
             <ul>
                 <li v-for="(item, key) in v_categoryObj"  :key="key" @click="fnCategoryPageMove($event ,item.id)" 
@@ -81,8 +85,12 @@ $Axios.get('/api/main' ,{})
 }).catch((error) => {
     console.log(error);
 }).finally(() => {
-   emit('toggle-loading', false);
+    setTimeout(() => {
+        emit('toggle-loading', false);
+    },1000)
 })
+
+
 </script>
 <style>
     .main-cont{
@@ -108,8 +116,7 @@ $Axios.get('/api/main' ,{})
         position: relative;
         display: inline-block;
         width:47%; 
-        text-align :center;
-        height:70px;
+        padding: 40px 0;
         border:1px solid #979797;
         align-content:center;
         margin:5px 0  5px 5px;
@@ -122,7 +129,8 @@ $Axios.get('/api/main' ,{})
         margin-top : 20px;
         border:1px solid #cdcdcd;
         align-content:center;
-        height: 100px;
+        line-height: 150px;
+        /* height: 100px; */
         font-size : 20px;
         font-weight:bold;
     }

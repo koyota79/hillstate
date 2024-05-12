@@ -4,7 +4,7 @@
         <img v-show="v_classActive" width= "25px" src = "../assets/images/btn_cont.png"  @click="fnShowSearch($event)" />
         <div v-show="v_classActive =! v_classActive" class="arrow-prev"  @click="fnRouterBack()"></div>
     </div>    
-    <top-logo  @click="fnGoMovePage($event)" ></top-logo>
+    <a href="#none" @click="fnGoMovePage($event)" ><top-logo></top-logo></a>
     <search  ref="r_showSearch"></search>
     <!-- <img width="160px" src = "../assets/images/logo_hanam.png" /> -->
   </div>
@@ -12,17 +12,17 @@
 </template>
 
 <script setup>
-  import { ref, onMounted ,onUnmounted  } from 'vue'
-  import { useRoute ,useRouter } from 'vue-router'
+  import { ref, onMounted ,watch  } from 'vue'
+  import { useRoute ,useRouter} from 'vue-router'
   let url = history.state.current
   let v_classActive =  url.search('/shop_info')==0?false:true
   //console.log('::watch:::::::::::::::' ,url , url.search('/shop_info')==0?false:true)
   const router = useRouter()
   const route  = useRoute()
-  
-  function fnGoMovePage(e) {      
+
+  function fnGoMovePage(e) {    
     if(e){
-      router.push({ path: '/' })
+      router.push({ path: '/'})
     }
   }
 
@@ -33,9 +33,6 @@
       //this.$Store.commit('setScrollToggle')
   } 
 
-  // watch(v_classActive, ([newX, newY]) => {
-  //     console.log(':::' ,newX , newY)
-  // })
 
   function fnRouterBack(){
     router.go(-1)
@@ -45,7 +42,7 @@
   //       console.log('::watch:::::::::::::::' ,newX , newY)
   // })
   onMounted(() => {
-    console.log('route' , route.name)
+    //console.log('route' , route.name)
 
     const v_hidden = document.getElementsByTagName('body')
     if(route.name != 'MapSearch'){

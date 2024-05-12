@@ -1,8 +1,6 @@
 <template>
     <div class="detail-container">
         <div class="shop-detail">
-
-
             <div style="height: 250px;margin-bottom:20px;" v-if="r_imgShow"> 
                 <swiper
                     :centeredSlides="true"
@@ -16,10 +14,9 @@
                     class="mySwiper">
                     
                     <swiper-slide
-                        v-for="(subSlide, index) in r_subSlides"
+                        v-for="(item, index) in r_subSlides"
                         :key="index"  id="slide-swiper" >
-                        <!-- {{ subSlide.title }} -->
-                        <img :src="subSlide.image"   @onerror="imageLoadOnError"  />  
+                        <img src=""  class="slide-img"   @onerror="imageLoadOnError"  />  
                     </swiper-slide>
                 </swiper>
             </div>
@@ -95,11 +92,11 @@
     emit('toggle-loading', true);
     onBeforeMount(async () => {
         fetchData()
+        
     })
 
- 
     function fetchData () {
-        let v_shop_id = route.params.shop_id 
+        let v_shop_id = route.params.id 
         let p_url   = "/api/shop_info/" + v_shop_id   
         Axios.get(p_url ,{}).then((response) => {
             const shopInfo = response.data["shop_detail"]
@@ -117,7 +114,9 @@
         }).catch((error) => {
             console.log(error);
         }).finally(() => {
-            emit('toggle-loading', false);
+            setTimeout(() => {
+                emit('toggle-loading', false);
+            },1000)
         })
 
         if(v_shop_id ==='2222'){
@@ -155,11 +154,35 @@
         }
        
     }
+
     onMounted(() => {
+        const slideImg = document.getElementsByClassName('slide-img')
+        for(let i=0; i < slideImg.length; i++){
+            //let item = slideImg[i]
+            let img = new Image() 
+                img.src = r_subSlides.value[i].image
+                //const imageTag = document.createElement("img");
+                slideImg[i].classList.add('img-load')
+                //slideImg[i].style.width = '300px'
+                slideImg[i].style.height = '130px'
+                slideImg[i].style.marginLeft = '20px'
+                //slideImg[i].style.padding = '20px'
+                slideImg[i].src = require('../assets/images/event/event-loading.gif')
+                img.addEventListener("load", function() {
+                //     setTimeout(() => {
+                    slideImg[i].style.height = '260px'
+                    slideImg[i].style.marginLeft = '0px'
+                    slideImg[i].src = r_subSlides.value[i].image  
+                //     }, 2000);
+                });
+
+        }
+
+
         if(imageSlide){
            const scollbar =  document.getElementsByClassName('swiper-scrollbar')[0]
            scollbar.style.backgroundColor  = '#fff'
-       }
+        }
     })
 </script>
 <style scoped>

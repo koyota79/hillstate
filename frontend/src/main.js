@@ -9,7 +9,7 @@ import 'vue-stacked-ui/dist/vue-stacked-ui.css'
 
 import Menu from './components/Menu'
 import MainSlide from './components/MainSlide';
-import TopLogo from './components/Top_logo';
+import TopLogo from './components/TopLogo';
 import Search from './components/Search';
 import Footer from './components/Footer'; 
 import LoadingBar from './components/LoadingBar'; 

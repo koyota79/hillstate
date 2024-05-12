@@ -5,7 +5,7 @@
         </div>  
         <!-- <div v-for="(item, index) in eventImg"> -->
             <div id="event_images">
-                <img width="350px" src="../assets/images/shop/no_image.jpg" v-show="r_loadingImage"/>
+                <!-- <img width="350px" src="../assets/images/shop/no_image.jpg" v-show="r_loadingImage"/> -->
                  <!-- <img width="350px" class="img-load v-lazy-image" :src="item"  @onerror="imageLoadOnError" />  -->
                 <!-- <div class="loading" v-show="r_loadingImage">
                     <span></span>
@@ -24,7 +24,7 @@
   
 <script setup>
     import {ref, onMounted } from 'vue'
-    let r_loadingImage      = ref(true)
+    //let r_loadingImage      = ref(true)
     let imageLoadingSize    = 0
     let startImageSize      = 4
 
@@ -45,7 +45,7 @@
         // require('@/assets/images/event/event_2.png'),
         // require('@/assets/images/event/event_3.png'),   
     ]
-    let scrollHeight    = document.body.scrollHeight
+    //let scrollHeight    = document.body.scrollHeight
     //let viewScrollSize  = parseInt(totalScrollTop /scrollHeight)
     
     //console.log( startImageSize, 'scrollHeight' ,Math.round(13/4) ,'index' ,imageLoadingSize )
@@ -77,10 +77,10 @@
                 imageTag.src = require('../assets/images/event/event-loading.gif')
                 div.appendChild(imageTag)
                 img.addEventListener("load", function() {
-                    r_loadingImage.value = false
-                    //setTimeout(() => {
+                    //r_loadingImage.value = false
+                    setTimeout(() => {
                         imageTag.src = item  
-                   // }, 300);
+                    }, 300);
                 
                     imageLoadingSize +=  1 
              

@@ -2,7 +2,7 @@
     <div>
     <div class="searchbar"  :class="{active: r_isActive}">
         <div class="arrow-prev" @click="fnChildShowSearch($event , false)"> </div>
-        <div style="position: static;">
+        <div style="position: static;height:100%;">
             <!-- <div class="input-type" ><input style="width:240px;height: 25px;" v-model="message" placeholder="검색어를 입력하세요"></div> -->
 
             <div class="autocomplete">
@@ -22,7 +22,7 @@
                 <div class="recommend">
                     추천 검색어 
                 </div> 
-                <div style="position: relative ;top:35px;left:25px;display: flex;">
+                <div style="position: relative ;top:35px;left:25px;display: flex;height:45px;">
                     <p class="recommend_text" @click="fnReCommendClick($event ,'1001','신명부동산')">신명부동산</p>
                     <p class="recommend_text" @click="fnReCommendClick($event ,'B1001','다이소')">다이소</p>
                     <p class="recommend_text" @click="fnReCommendClick($event ,'2002','거북이한의원')">거북이한의원</p>
@@ -40,7 +40,7 @@
                         <p class="recommend_text" @click="fnCategoryPageMove($event ,'BEAUTY')">뷰티</p>
                         <p class="recommend_text" @click="fnCategoryPageMove($event ,'SHOP')">쇼핑</p>
                         <p class="recommend_text" @click="fnCategoryPageMove($event ,'SERVICE')">문화/서비스</p>
-                        <router-link :to="{name : 'MapSearch' ,params : {id:2001}}"><p class="recommend_text">테스트</p></router-link>
+                        <!-- <router-link :to="{name : 'MapSearch' ,params : {id:2001}}"><p class="recommend_text">테스트</p></router-link> -->
                     </div>
                 </div>
             </div>
@@ -63,10 +63,10 @@
             </div> -->
             <div class="search-menu-list">
                 <ul style="margin:0;padding:0;">
-                    <li @click="fnMovePage($event ,'MapSearch')" class="search-menu_sub"><div>층별안내</div></li>
-                    <li @click="fnMovePage($event ,'Location')" class="search-menu_sub" style="border-right:none;"><div>위치/주차</div></li>
-                    <li @click="fnMovePage($event ,'Event')" class="search-menu_sub" style="border-bottom:none;border-top:none;"><div>이벤트</div></li>
-                    <li @click="fnMovePage($event ,'Content')" class="search-menu_sub" style="border-right:none;border-bottom:none;border-top:none;"><div>신규오픈</div></li>
+                    <a href="#none"  @click="fnMovePage($event ,'MapSearch')"><li class="search-menu_sub"><div>층별안내</div></li></a>
+                    <a href="#none"  @click="fnMovePage($event ,'Location')"><li class="search-menu_sub" style="border-right:none;"><div>위치/주차</div></li></a>
+                    <a href="#none"  @click="fnMovePage($event ,'Event')"><li class="search-menu_sub" style="border-bottom:none;border-top:none;"><div>이벤트</div></li></a>
+                    <a href="#none"  @click="fnMovePage($event ,'Content')"><li class="search-menu_sub" style="border-right:none;border-bottom:none;border-top:none;"><div>신규오픈</div></li></a>
                 </ul>                
             </div>
 
@@ -91,6 +91,7 @@ const r_defaultItem   = ref([])
 const shopSimpleObj   = store.state.shopSimPleData
 //const items_arry      = shopSimpleObj //Object.values(shopSimpleObj) //['다이소','다이슨','다날','다와서','샌드하우스','거북이한의원','다나와','신명부동산','센느','고민정헤어']
  
+//서치버튼
 function fnChildShowSearch(e ,isTrue){
     if(e){
         r_isActive.value =  isTrue  
@@ -102,6 +103,8 @@ function fnChildShowSearch(e ,isTrue){
         }
     }
 }
+
+//검색조건
 function fnGetItems(keyword) {
     if(keyword.length > 0){
         const query = shopSimpleObj.filter((obj) => {
@@ -113,10 +116,11 @@ function fnGetItems(keyword) {
     }
 }
 
+//검색어 클릭
 function clickItem(item) {
     store.commit('setOverFlow' ,false)
     router.push({ path: "/shop_info" ,name : "ShopDetail" 
-        ,params : {'shop_id' : item.key } 
+        ,params : {'id' : item.key } 
     })
 
 }
@@ -129,13 +133,16 @@ function fnCategoryPageMove(e ,key){
 //하단 메뉴 이동
 function fnMovePage(e ,key) {
     store.commit('setOverFlow' ,false)
-    router.push({name : key ,params: {'id': '2001'}})
+    router.push({name : key ,params: {'id': '0000'}})
 }
 
 //추천메뉴
 function fnReCommendClick(e ,id ,value){
     r_auto_ref.value.setText(value)
     r_defaultItem.value = [{key : id ,name:value}]
+    setTimeout(() => {
+        clickItem({key : id ,name:value})
+    }, 500);
 }
 
 onMounted(() => { 
@@ -143,109 +150,9 @@ onMounted(() => {
 })//end mounted
 
 
-defineExpose({
+defineExpose({ // 부모 컴포넌트가 자식 컴포넌트의 API에 직접적으로 접근
     fnChildShowSearch
 })
-    // import Autocomplete from 'vue3-autocomplete'
-    // // Optional: Import default CSS
-    // import 'vue3-autocomplete/dist/vue3-autocomplete.css'
-
-    // export default {
-    //     components: {
-    //         Autocomplete,
-    //     },
-    //     data() {
-    //         return {
-    //             isActive : false ,//검색 페이지 
-    //             item: {id: 9, name: 'Lion', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.'},
-    //             items: [],
-    //             items_arry : ['다이소','다이슨','다날','다와서','샌드하우스','거북이한의원','다나와','신명부동산','센느','고민정헤어'] ,
-    //             textDecoration : {},
-    //             body : {},
-    //             setText : '',
-    //             focusout : true
-    //         }
-
-    //     },
-    //     created() {
-    //         //console.log("Parent mounted")
-    //         //this.fetchData(this.$route)
-    //          //navbarMenu.value = document.querySelector('.navbar_menu');
-    //     },    
-    //     mounted(){
-    //         this.body =  document.querySelector('body')
-
-            
-    //     },
-    //     watch : {
-    //         isActive(active) {
-    //             console.log('active' , active)
-    //             //window.scrollTo(0, 0);
-    //             if(active){
-    //                 this.body.classList.add('hidden');
-    //                 this.items = []
-    //             }else{
-    //                 this.body.classList.remove('hidden');
-    //                 this.$refs.auto_ref.searchText = ''
-    //             }
-    //         }
-    //     },
-    //     methods: {
-    //         fetchData (params) {
-    //             //console.log(11111111 ,params)
-    //             //console.log('history.state: ', history.state)
-    //         },
-
-    //         fnMovePage(event ,key) {
-    //             //console.log(key)
-    //             this.body.classList.remove('hidden');
-    //             //this.$router.push({ path: key })
-    //             this.$router.push({name : key})
-    //         },
-    //         fnLocationPage(event ,key) {
-    //             console.log('event' ,event ,key )
-    //             this.body.classList.remove('hidden');
-    //             this.$router.push({ name: 'Location' })
-    //         },
-    //         fnShowSearch(event ,isTrue){
-    //             if(event){
-    //                 this.isActive =  isTrue  
-    //                // this.$emit('fnChildScrollYn', isTrue);
-    //             }
-    //         },
-    //         getItems (item) {
-    //             //this.$refs.auto_ref.$el.classList.add('auto_class_item');
-    //             if(item.length > 0) {
-
-    //                 let query = this.items_arry.filter((obj) => {
-    //                     return obj.indexOf(item) >= 0
-    //                 })  
-    //                 console.log(query)
-    //                 if(query.length > 0 ) {
-    //                     this.items = query
-    //                 }else{
-    //                     this.items = ["해당 검색조건이 없습니다."]
-    //                 } 
-
-    //             }else{
-    //                 this.items = []
-    //             }
-            
-    //         },
-    //         clickItem (text) {
-    //             console.log('::clickItem::',text)
-    //             this.$refs.auto_ref.searchText = text
-    //            // this.$nextTick(() => this.$refs.recommend_ref.focus())
-
-    //         },
-    //         fnCategoryPageMove(event ,key){
-    //             this.body.classList.remove('hidden');
-    //             this.$router.push({ name: 'Category' ,params: {'id': key}})  
-    //         }
-
-    //     }
-  
-    // };
 </script>
 
 <style scoped>
@@ -280,6 +187,8 @@ defineExpose({
     border-radius: 4px;
     padding: 5px;
     margin:5px;
+    line-height:25px;
+    display: inline-block;
 }
 .border_line {
     border: 1px solid #EAEBEA;
@@ -348,18 +257,26 @@ defineExpose({
 }
 .search-menu-list{
     position:relative;
-    top:130px;
+    top:20%;
+    display: flex;
+    float: left;
+}
+.search-menu-list a {
+  text-decoration: none;
+  color: black;
+  
 }
 .search-menu_sub{
     position: relative;
     display: inline-block;
-    width:47%; 
-    text-align :center;
-    height:135px;
+    width: 180px; 
+    /* padding: 60px 0; */
+    padding: 18% 0;
     border:1px solid #cdcdcd;
     border-left : none;
     align-content:center;
     font-weight:bold;
+    /* line-height: 135px */
  }
  .search-category-title{
     position: relative;
@@ -368,17 +285,19 @@ defineExpose({
  }
  .search-category{
     position:relative;
-    display: flex;
-    justify-content:space-around;
-    flex-flow:wrap;
+    /* display: flex;
+    justify-content:left;
+    flex-flow:wrap; */
     top:115px; 
+    margin-left:15px;
  }
 
  .search-category p{
     font-weight:bold;
-    width:80px;
+    width:100px;
     height:30px;
     align-content:center;
+    float: left;
  }
 
  @media (max-width: 360px){

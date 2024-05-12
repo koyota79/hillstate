@@ -11,7 +11,6 @@ This code may be freely distributed under the MIT License
  
 (function() {
     var root = this; //global object
- 
     var ImgTouchCanvas = function(options) {
         if( !options || !options.canvas || !options.path) {
             throw 'ImgZoom constructor: missing arguments canvas or path';
@@ -33,37 +32,41 @@ This code may be freely distributed under the MIT License
             x: 0.5,
             y: 0.5
         };
-        this.mousePos = {x : 0 ,y : 0 ,easeValue : 0.03 ,startX : 0 ,startY : 0}
-        this.calcPos  = {x : 0 ,y : 0}
-        this.markerPos = {}
-        this.touchPos = {x : 0 ,y : 0 ,tempPosX : 0 , tempPosY : 0 ,touchBetween : {x:0,y:0} ,rotationAngle : 0}
-        this.sTime     = 0
-        this.dragging = 0
-        this.zoomCutLine = {s : 0.25 ,isTrue : true}
-        this.calcSpeed = 0.0001
-        this.easeSpeed = 0.05
-        this.imgTexture = new Image();
+        this.mousePos       = {x : 0 ,y : 0 ,easeValue : 0.03 ,startX : 0 ,startY : 0}
+        this.calcPos        = {x : 0 ,y : 0}
+        this.markerPos      = {}
+        this.touchPos       = {x : 0 ,y : 0 ,movePosX : 0 , movePosY : 0 ,touchBetween : {x:0,y:0} ,rotationAngle : 0}
+        this.sTime          = 0
+        this.dragging       = 0
+        this.draggingEnd    = false
+        this.slowMove       = false
+        this.zoomCutLine    = {s : 0.25 ,isTrue : true}
+        this.calcSpeed      = 0
+        this.maxPos         = 0
+        this.easeSpeed      = 0.05
+        this.imgTexture     = new Image();
         this.imgTexture.src = options.path;
 
-        this.markerImage = new Image();
+        this.markerImage    = new Image();
         this.markerImage.src = require("../assets/images/marker2.jpg");
-        this.markerShow = null;
+        this.markerShow     = null;
         
-        this.lastZoomScale = null;
-        this.lastX = null;
-        this.lastY = null;
+        this.lastZoomScale  = null;
+        this.lastX          = null;
+        this.lastY          = null;
  
-        this.mdown = false; //desktop drag
-        this.fontSize = 30
-        this.zoomFade = 0
-        this.init = false;
-        this.shopNmArryPos = options.shopNmPos
-        this.shopIdPos = {}
-        this.isPinch = false
-        this.targetX = 0;  // 목표 x 좌표
-        this.speed = 5;  // 이동 속도
+        this.mdown          = false; //desktop drag
+        this.fontSize       = 30
+        this.init           = false;
+        this.shopNmArryPos  = options.shopNmPos
+        this.shopIdPos      = {}
+        this.selectedId     = null
+        this.isPinch        = false
+        this.moveStop       = false
+        this.targetX        = 0;  // 목표 x 좌표
 
-
+        this.selectPosX = 0
+        this.selectPosY = 0
         this.checkRequestAnimationFrame();
         requestAnimationFrame(this.animate.bind(this));
  
@@ -90,19 +93,57 @@ This code may be freely distributed under the MIT License
 
                 }
             }
- 
+            if (this.slowMove && !this.isPinch && !this.moveStop) {
+                if(this.maxPos > 170 && this.selectedId == null){//슬라이드 최대 이동거리
+                    console.log('들어오먄 안됨')
+                    this.maxPos = 170
+                }
 
+     
+                if(this.selectedId != null){
 
+                    this.position.x +=  (this.touchPos.movePosX * ( this.calcSpeed * 0.01 )  ) * 0.02
+                    this.position.y +=  (this.touchPos.movePosY * ( this.calcSpeed * 0.01 )  ) * 0.02
+                    console.log(this.touchPos.movePosX , '::움직이는 갈 거리' , this.touchPos.movePosY)
+                    console.log(this.position.x , '::움직이는 거리' , this.position.y)
+
+                    // if(Math.abs(this.touchPos.movePosX) <= Math.abs(this.position.x)){
+                    //     console.log(this.touchPos.movePosX , ':멈춰야 하는 포지션:' , this.position.x)
+                    //     this.slowMove = false
+                    // }
+                    //this.position.x = selectPosX//this.shopIdPos[this.selectedId].px * this.scale.x
+                    //this.position.y = selectPosY//this.shopIdPos[this.selectedId].py * this.scale.y
+                }else{
+                    this.position.x += (this.touchPos.movePosX) * Math.abs((this.maxPos - this.calcSpeed) * 0.0002)
+                    this.position.y += (this.touchPos.movePosY) * Math.abs((this.maxPos - this.calcSpeed) * 0.0002)
+                }
+                // console.log( 'Max 값=',this.maxPos ,
+                //     ':::::::' ,this.position.x , this.position.y ,
+                // '스피드값=' , this.calcSpeed)
+                if( (this.maxPos < this.calcSpeed && this.selectedId == null) || 
+                (Math.abs(this.touchPos.movePosX) <= Math.abs(this.position.x) && this.selectedId != null)){ //핀치움직임 || 메뉴좌표움직임
+                  console.log(this.position.x , '=도착한 좌표=' , this.position.y)
+                  console.log('스피드 초기화' , this.calcSpeed)
+                  this.calcSpeed            = 0
+                  this.maxPos               = 0
+                  //this.touchPos.movePosX    = this.position.x 
+                  //this.touchPos.movePosY    = this.position.y
+                  this.slowMove             = false
+                
+             
+                }else{
+                  this.calcSpeed += 6 //적정 수치 계산해야 함
+                }
+            }
 
             // let elapsed = 0
             // if(this.sTime === 0){
             //     this.sTime = timestamp
             // }
 
-
             //this.touchPos.rotationAngle = 45
-            //this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.context.reset();
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            //this.context.reset();
             // this.context.translate(this.position.x  , this.position.y);
 
             //this.doRotate()
@@ -114,24 +155,16 @@ This code may be freely distributed under the MIT License
                 this.scale.y * this.imgTexture.height);
             this.context.translate(-this.position.x ,-this.position.y);
 
-       
-       
+          
+
             this.selectedShop()
             if(this.markerShow != null){
                 this.markerDraw(this.markerShow)
             }
             this.setFillText()
               // this.touchPos.rotationAngle = this.touchPos.rotationAngle + 1
-            // if (this.dragging > 1 ) {
-                
-            //     if(this.position.x >= 0){
-            //         this.position.x = (this.position.x  + this.speed )
-            //         if (this.position.x < this.targetX ) this.position.x = this.targetX ;
-            //     }else{
-            //         this.position.x =  -(Math.abs(this.position.x ) + this.speed )
-            //         if (this.position.x > this.targetX ) this.position.x = this.targetX ;
-            //     }
-            // }
+
+            
             requestAnimationFrame(this.animate.bind(this));
         },
         gesturePinchZoom: function(event) {
@@ -147,8 +180,6 @@ This code may be freely distributed under the MIT License
                 }
  
                 this.lastZoomScale = zoomScale;
-                this.touchPos.touchBetween.x = (p2.pageX - p1.pageX) / 2
-                this.touchPos.touchBetween.y = (p2.pageY - p1.pageY) / 2
             }
  
             return zoom;
@@ -208,7 +239,7 @@ This code may be freely distributed under the MIT License
             this.position.x = newPosX;
             this.position.y = newPosY;
         },
-        doRotate : function() {
+        doRotate : function() {//현재 미구현
             if(this.touchPos.rotationAngle != 0 ){
            
                 var canvasmiddleX = this.canvas.clientWidth / 2;
@@ -230,33 +261,35 @@ This code may be freely distributed under the MIT License
               this.position.x += deltaX;
               this.position.y += deltaY;
  
-              var currentWidth    = (this.imgTexture.width * this.scale.x);
-              var currentHeight   = (this.imgTexture.height * this.scale.y);
-              var zoomWidth       = (this.canvas.width * this.scale.x)
+            //   var currentWidth    = (this.imgTexture.width * this.scale.x);
+            //   var currentHeight   = (this.imgTexture.height * this.scale.y);
+            //   var zoomWidth       = (this.canvas.width * this.scale.x)
 
-            //   if( (this.position.x + currentWidth) < this.canvas.clientWidth ) {
-                
-            //       this.position.x = this.canvas.clientWidth - currentWidth;
-            //       console.log('(this.position.x + currentWidth)' , this.position.x)
-            //   }
+            //console.log(this.touchPos.movePosX , this.touchPos.movePosY )
 
-            //   if( this.position.y + currentHeight < this.canvas.clientHeight ) {
-            //     this.position.y = this.canvas.clientHeight - currentHeight;
-            //   }
-              //edge cases
-            //   if( this.position.x > 0 ) {
-            //     this.position.x = 0;
-            //   }
-            //   else if( this.position.x + currentWidth < this.canvas.clientWidth ) {
-            //     this.position.x = this.canvas.clientWidth - currentWidth;
-            //   }
-            //   if( this.position.y > 0 ) {
-            //     this.position.y = 0;
-            //   }
-            //   else if( this.position.y + currentHeight < this.canvas.clientHeight ) {
-            //     this.position.y = this.canvas.clientHeight - currentHeight;
-            //   }
-            
+              let scaleSizeX  = 0
+              let scaleSizeY  = 0
+                  scaleSizeX  = parseInt( (this.imgTexture.width  * this.scale.x ) * 0.9 ) //화면의 90프로
+                  scaleSizeY  = parseInt( (this.imgTexture.height * this.scale.y ) * 0.9 )
+                  // console.log(
+                  //     'scaleSizeX = ', scaleSizeY  ,(this.imgTexture.height * this.scale.y ) * 0.8 ,
+                  //     'scaleSizeX-position=', window.innerHeight  * 0.75 , 
+                  //     'position = ' ,this.position.y   )
+
+              if(-scaleSizeX > this.position.x ){  //왼쪽
+                 this.position.x = -(scaleSizeX) 
+                 this.moveStop = true
+              }else if( ( window.innerWidth * 0.88) <= this.position.x ){ //오른쪽
+                  this.position.x = ( window.innerWidth * 0.88)
+                  this.moveStop = true
+              }else if(-scaleSizeY > this.position.y ){//위
+                  this.position.y = -(scaleSizeY) 
+                  this.moveStop = true
+              }else if( ( window.innerHeight * 0.75 ) <= this.position.y  ){//아래 하단은 버튼때문에 좀더 위쪽으로 제한
+                  this.position.y =  ( window.innerHeight * 0.75 ) 
+                    this.moveStop = true
+              }
+              
             }
  
             this.lastX = relativeX;
@@ -288,28 +321,29 @@ This code may be freely distributed under the MIT License
                 floor = item.position //층별
             }
 
-
-            //상점명이 사라지기전에 층 호수 fade 시작하기 위해 0.07을 더한다
-            if(this.scale.x <=  (this.zoomCutLine.s+0.07) ){
-                this.zoomFade = 0
+            //상점명이 사라지기전에 층 호수 fade 시작하기 위해 0.03을 더한다
+            if(this.scale.x <=  (this.zoomCutLine.s+0.03) ){
+                //this.zoomFade = 0
                 //0부터 시작하기 위해 scale 값이 0.6이므로 차감하고 시작,4배수 
-                this.zoomFade += ((( (1 - Math.abs(this.scale.x) )) -0.6).toFixed(2) * 4 ) 
-                let alpha  = this.zoomFade >= 0.6 ? 1 : this.zoomFade
-                this.context.globalAlpha =  alpha
-
-                let tfontSize = 275 * this.scale.x 
+                // let zoomFade = (( (1 - Math.abs(this.scale.x))).toFixed(2)  ) 
+                // console.log('zoomFade' , zoomFade , this.zoomCutLine.s , zoomFade - this.zoomCutLine.s )
+                // let alpha  = zoomFade >= 0.6 ? 1 : zoomFade
+                this.context.globalAlpha =  1
+                tfontSize = 0
+                tfontSize = 275 * this.scale.x 
                 this.context.font = tfontSize + "px NanumGothic";
-
+                this.context.fillStyle = "#a3a3a3"; // #95969752 
+                
                 let fx = (580 * this.scale.x) 
                 let fy = (730 * this.scale.y) 
                 this.context.fillText(floor +'F' , ( fx + this.position.x) ,( fy + this.position.y )) 
+             
             }
 
         
 
         },
         selectedShop :function(){
-            //console.log('this.zoomFade', this.zoomFade)
             for(let i=0; i < this.shopNmArryPos.length; i++){
                 let item = this.shopNmArryPos[i]
                 //this.shopIdPos[item.shop_id] = {x :item.px ,y : item.py} //매장 위치좌표
@@ -335,8 +369,8 @@ This code may be freely distributed under the MIT License
                 }
 
 
-                //마커 위치
-                this.markerPos[item.shop_id] = {'x': posX, 'y': posY - ((this.markerImage.height)* this.scale.y)  }
+                //마커 위치 마커이미지 높이만큼 차감
+                this.markerPos[item.shop_id] = {'x': posX, 'y': posY - ((this.markerImage.height) * this.scale.y)  }
 
               //  console.log(areaX1 , 'selectedShop', areaY1)
                 // this.context.beginPath()
@@ -347,7 +381,8 @@ This code may be freely distributed under the MIT License
                 // this.context.stroke()
 
    
-                if( (this.dragging == 0 && this.isPinch) &&  (areaX1 <= calcX && areaX2 >= calcX && 
+                if( (this.dragging == 0 && !this.isPinch && this.draggingEnd) && 
+                 (areaX1 <= calcX && areaX2 >= calcX && 
                     areaY1 <= calcY && areaY2 >= calcY)  ){ //&& this.calcPos.x == calcX
                     this.divLayer.classList.remove('btn-close')
                     const layerShopNm = document.getElementById('layer-title')
@@ -380,17 +415,26 @@ This code may be freely distributed under the MIT License
             );  
         },
         menuClickShop: function(id) {
-            console.log('this.shopIdPos[idx]' ,this.shopIdPos[id] )
+            //console.log('this.shopIdPos[idx]' ,this.shopIdPos[id] )
             if(this.shopIdPos[id] === undefined || this.shopIdPos[id] === 'undefined')
                 return
 
-            this.markerImage.width = 80
+            this.markerImage.width  = 80
             this.markerImage.height = 80
 
             this.scale.x  = 0.5
             this.scale.y  = 0.5
-            this.position.x = this.shopIdPos[id].px
-            this.position.y = this.shopIdPos[id].py
+     
+            this.maxPos = Math.max(Math.abs(this.shopIdPos[id].px * this.scale.x) ,Math.abs(this.shopIdPos[id].py * this.scale.y ))
+            console.log('선택한 맥스 포지션 = ' ,this.maxPos)
+            console.log((this.shopIdPos[id].px * this.scale.x ), '선택한 위치 포지션 = ' ,(this.shopIdPos[id].py * this.scale.y ))
+            this.touchPos.movePosX  = (this.shopIdPos[id].px * this.scale.x ) - this.position.x
+            this.touchPos.movePosY  = (this.shopIdPos[id].py * this.scale.y ) - this.position.y
+            this.slowMove           = true
+            this.selectedId         = id
+            // this.position.x = this.shopIdPos[id].px
+            // this.position.y = this.shopIdPos[id].py
+            this.moveStop           = false //벽에 부딪혔을때 메뉴 클릭 움직임이 되지않는 문제로 
             this.imgMarker(id)
 
         },
@@ -402,14 +446,17 @@ This code may be freely distributed under the MIT License
                 this.lastZoomScale  = null;
                 this.isPinch        = false
                 this.dragging       = 0
+                this.slowMove       = false
+                this.moveStop       = false
                 this.calcPos.x      = e.touches[0].clientX - (this.position.x + this.canvas.getBoundingClientRect().left)
                 this.calcPos.y      = e.touches[0].clientY - (this.position.y + this.canvas.getBoundingClientRect().top)
-                console.log(this.calcPos.x , ' this.calcPos.x ' , this.calcPos.y)
+                //console.log(this.calcPos.x , ' this.calcPos.x ' , this.calcPos.y)
+                this.selectedId     = null
 
-
-                if(e.targetTouches.length > 1) {
-                    console.log('tyleof' ,typeof e.rotation)
-                }
+                this.touchPos.x = e.touches[0].clientX
+                this.touchPos.y = e.touches[0].clientY - this.canvas.getBoundingClientRect().top
+                this.draggingEnd    = false
+   
                 //this.touchPos.startAngle = Math.atan2(e.touches[0].clientY - canvas.height / 2, e.touches[0].clientX - canvas.width / 2);
                 
                 //this.mousePos.easeValue = this.easeSpeed
@@ -419,38 +466,35 @@ This code may be freely distributed under the MIT License
                 e.preventDefault();
                  
                 if(e.targetTouches.length == 2) { //pinch
-                    this.isPinch = false
                     this.doZoom(this.gesturePinchZoom(e));
+                    this.isPinch = true
                     // this.touchPos.currentAngle = Math.atan2(e.touches[0].clientY - this.canvas.height / 2, e.touches[0].clientX - this.canvas.width / 2);
                     // this.touchPos.rotationAngle = (this.touchPos.currentAngle - this.touchPos.startAngle) ;
                 }
                 else if(e.targetTouches.length == 1) {
                     var relativeX = e.targetTouches[0].pageX - this.canvas.getBoundingClientRect().left;
                     var relativeY = e.targetTouches[0].pageY - this.canvas.getBoundingClientRect().top; 
-                    let scaleSizeX = 0
-                    let scaleSizeX2 = 0
-                        scaleSizeX  = parseInt( (this.canvas.width * this.scale.x )) * 6
-                        scaleSizeX2 = parseInt( ((this.canvas.width) * (this.scale.x * 2) )) 
-                        console.log(scaleSizeX, 'scaleSizeX' , (scaleSizeX2 - 50) , '::position::' ,this.position.x )
-                    if(this.position.x < -(this.position.x  +  scaleSizeX) ){
-                       this.position.x = -(this.position.x  +  scaleSizeX) 
-                    }else if(this.position.x >= (scaleSizeX2 - 50) ){
-                        this.position.x = (scaleSizeX2 - 50)
-               
-                        
-                    }
-
                     
-
+                    this.touchPos.movePosX = relativeX - this.touchPos.x 
+                    this.touchPos.movePosY = relativeY - this.touchPos.y
                     this.doMove(relativeX, relativeY);
+                  
                 }
                 this.dragging = relativeX
             }.bind(this));
  
             this.canvas.addEventListener('touchend', function(e) {
                 e.preventDefault();    
-                this.targetX = (30 + Math.abs(this.position.x))
-                this.isPinch  = true
+                this.targetX        = (30 + Math.abs(this.position.x))
+                this.draggingEnd    = true
+                if(this.dragging > 0 && !this.isPinch ){
+                    this.slowMove = true
+                    this.maxPos = Math.max(Math.abs(this.touchPos.movePosX) ,Math.abs(this.touchPos.movePosY))
+                    this.maxPos = this.maxPos<100?100:this.maxPos //잔 움직임을 부드럽게 하기위해 기본 거리 100세팅
+                }
+
+                //console.log(this.touchPos.movePosX , '::::::::::::', this.touchPos.x , this.dragging)
+
             }.bind(this));
 
 

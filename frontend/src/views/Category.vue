@@ -93,7 +93,7 @@
        if(event){
             store.commit('setSearchIcon' ,false)
             router.push({ path: "/shop_info" ,name : "ShopDetail" 
-             ,params : {shop_id : item.shop_id } 
+             ,params : {id : item.shop_id } 
              ,state: { //url 에서 안보이게 처리
                 name: 'shop_id',
                 shop_id: item.shop_id ,
@@ -117,17 +117,19 @@
 }
 .category-container h2{
     width:91%;
-    height:70px;
+    height:80px;
     border:1px solid #dbdada;
     align-content:center;
     display: inline-block;
     border-radius:3px;
+    line-height: 80px;
 }
 .category-list{
     display:flex;
-    margin-left:20px;
+    margin-left:12px;
     flex-wrap:wrap;
 }
+
 .category-list div{
     padding:10px;
     border:1px solid #dbdada;
@@ -156,6 +158,7 @@
     align-content:center;
     border-radius:5px;
     margin-bottom:45px;
+    line-height: 20px;
 }
 .shop-list-item div{
     position:relative;

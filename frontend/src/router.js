@@ -1,6 +1,6 @@
 import { createWebHistory, createRouter } from 'vue-router';
 
-import About from './views/About'
+// import About from './views/About'
 import Main from './views/Main'
 //import Header from './views/Header'
 import ErrorPage from './views/ErrorPage'
@@ -21,7 +21,7 @@ const routes = [
             {
               path: '/',
               name: 'Main',
-              component: ()=> Main
+              component: ()=> Main,
             },
             { 
               path: '/location',
@@ -40,7 +40,7 @@ const routes = [
               component: ()=> SiteMap
             },
             { 
-              path: '/shop_info/:shop_id',
+              path: '/shop_info/:id',
               name: 'ShopDetail',
               props : true,
               component: ()=> ShopDetail

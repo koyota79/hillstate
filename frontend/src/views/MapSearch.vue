@@ -28,8 +28,9 @@
         </div>
         <div class="menu-container" :class="[r_isActive ? 'menu-after' : '']">
             <div @click="r_isActive =! r_isActive " class="menui-upper">
-                <div class="menu-upper-line"></div>
-                <div class="menu-upper-line"></div>
+                <!-- <div class="menu-upper-line"></div>
+                <div class="menu-upper-line"></div> -->
+                <div>매장 찾기</div>
             </div>
             <div class="menu-list">
                 <!-- <div style="overflow-y:auto;display: ruby-text;height: 200px;">  @click="fnMenuClick($event ,item)"-->
@@ -104,14 +105,16 @@ r_menu_list.value = [
 const emit = defineEmits(["toggle-loading"]);
 emit('toggle-loading', true);
 store.commit('setOverFlow' ,true)
-onMounted(() => {  
+onMounted(() => {
+    //console.log(route.params.id )
     const p_shop_id = route.params.id 
-    const paramItem =  shopObj.find(function(data){ return data[p_shop_id] })
-    console.log(paramItem[p_shop_id] )
+    const paramItem = shopObj.find(function(data){ return data[p_shop_id] })
+    //console.log('paramItem[p_shop_id]' , paramItem[p_shop_id] )
 
     const floorSelect =  document.getElementById('floor')
-    let floorIdx =  Number(paramItem[p_shop_id].position=='B1'?0:paramItem[p_shop_id].position)
-    console.log('floorIdx' , floorIdx )
+    //디폴트 2층
+    let floorIdx =  p_shop_id=='0000'?2:Number(paramItem[p_shop_id].position=='B1'?0:paramItem[p_shop_id].position)
+    //console.log('floorIdx' , floorIdx )
     floorSelect.options[floorIdx].selected = true
 
    
@@ -129,38 +132,6 @@ onMounted(() => {
         return objShopMap[index].shopNmPos
        
     }
-
-    //하단 메뉴 함수 셋팅
-    // const elements    = document.getElementsByClassName('fnClickShop');
-    // for (var i = 0; i < elements.length; i++) {
-    //     elements[i].addEventListener('touchstart', fnClickStartShop, false);
-    //     elements[i].addEventListener('DOMContentLoaded', fnClickStartShop); 
-    //     elements[i].addEventListener('touchmove', fnClickMoveShop, false);
-    //     elements[i].addEventListener('DOMContentLoaded', fnClickMoveShop); 
-    //     elements[i].addEventListener('touchend', fnClickEendShop, false);
-    //     elements[i].addEventListener('DOMContentLoaded', fnClickEendShop); 
-    // }
-
-
-    // //하단 메뉴 클릭
-    // let v_shop_id = ''
-    // let v_clickScrollPos = {x : 0 ,y : 0 }
-    // function fnClickStartShop(e){
-    //     v_shop_id = e.touches[0].target.dataset.id
-    // }
-    // //하단 메뉴 클릭
-    // function fnClickMoveShop(e){
-    //     v_clickScrollPos.y = e.target.scrollHeight
-    // }
-
-    // //하단 메뉴 클릭
-    // function fnClickEendShop(e){
-    //     if(v_clickScrollPos.y == 0){
-    //         mapObject.menuClickShop(v_shop_id)
-    //     }
-    //     v_clickScrollPos.y = 0
-    // }
-
    
     floorSelect.addEventListener('input', fnSelectFloor, false)
     floorSelect.addEventListener('DOMContentLoaded', fnSelectFloor)
@@ -177,19 +148,27 @@ onMounted(() => {
     const layer = document.getElementById('dim-layer')
     //디폴드 이미지 생성
     function fnInitCanvas(idx){
-        mapObject = new ImgTouchCanvas({
-            canvas     : document.getElementById('canvas'),
-            path       : require("../assets/images/site_map_" + idx + ".jpg"),
-            dimLayer   : layer,
-            desktop    : true,
-            isActive   : r_isActive,
-            shopNmPos  : fnShopAssign(idx), //objShopMap[2].shopNmPos
-        })
+        try{
+                mapObject = new ImgTouchCanvas({
+                canvas     : document.getElementById('canvas'),
+                path       : require("../assets/images/site_map_" + idx + ".jpg"),
+                dimLayer   : layer,
+                desktop    : true,
+                isActive   : r_isActive,
+                shopNmPos  : fnShopAssign(idx), //objShopMap[2].shopNmPos
+            })
+            //console.log(mapObject.context)
+            setTimeout(() => {
+                if(mapObject.context){
+                    mapObject.menuClickShop(p_shop_id) 
+                } 
+                emit('toggle-loading', false);
+            },500)
+        }catch(e){
+            emit('toggle-loading', false);
+        }
 
-        emit('toggle-loading', false);
     }
-
-   
 
     const closeBtn = document.getElementsByClassName('btn-layerClose')[0]
     closeBtn.addEventListener('touchstart', e =>{
@@ -259,7 +238,7 @@ watch(r_isActive ,(newValue) => {
 }
 .menui-upper{
     padding: 5px;
-    width: 50px;
+    width: 100px;
     margin: 0 auto;
 }
 .menu-upper-line{
