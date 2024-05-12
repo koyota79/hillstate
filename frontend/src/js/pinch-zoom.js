@@ -102,8 +102,8 @@ This code may be freely distributed under the MIT License
      
                 if(this.selectedId != null){
 
-                    this.position.x +=  (this.touchPos.movePosX * ( this.calcSpeed * 0.01 )  ) * 0.02
-                    this.position.y +=  (this.touchPos.movePosY * ( this.calcSpeed * 0.01 )  ) * 0.02
+                    this.position.x = this.touchPos.movePosX //(this.touchPos.movePosX * ( this.calcSpeed * 0.01 )  ) * 0.02
+                    this.position.y = this.touchPos.movePosY //  (this.touchPos.movePosY * ( this.calcSpeed * 0.01 )  ) * 0.02
                     console.log(this.touchPos.movePosX , '::움직이는 갈 거리' , this.touchPos.movePosY)
                     console.log(this.position.x , '::움직이는 거리' , this.position.y)
 
@@ -428,8 +428,8 @@ This code may be freely distributed under the MIT License
             this.maxPos = Math.max(Math.abs(this.shopIdPos[id].px * this.scale.x) ,Math.abs(this.shopIdPos[id].py * this.scale.y ))
             console.log('선택한 맥스 포지션 = ' ,this.maxPos)
             console.log((this.shopIdPos[id].px * this.scale.x ), '선택한 위치 포지션 = ' ,(this.shopIdPos[id].py * this.scale.y ))
-            this.touchPos.movePosX  = (this.shopIdPos[id].px * this.scale.x ) - this.position.x
-            this.touchPos.movePosY  = (this.shopIdPos[id].py * this.scale.y ) - this.position.y
+            this.touchPos.movePosX  = (this.shopIdPos[id].px * this.scale.x ) //- this.position.x
+            this.touchPos.movePosY  = (this.shopIdPos[id].py * this.scale.y ) //- this.position.y
             this.slowMove           = true
             this.selectedId         = id
             // this.position.x = this.shopIdPos[id].px

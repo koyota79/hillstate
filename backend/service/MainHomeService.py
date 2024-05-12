@@ -44,9 +44,21 @@ class MainHomeService :
 
     def getList(self) :
         try :     
-            self.queryId = "selectShopList"  
+            self.sql = """
+                  select shop_id ,shop_nm ,open_time ,close_time ,tel_no
+                        ,position ,use_yn ,position_area ,category ,description
+                        ,case when position_area = 0 then '가' 
+                            when position_area = 1 then '나' 
+                            when position_area = 2 then '다' 
+                            when position_area = 3 then '라'
+                        end as position_nm 
+                       ,img_slide_yn ,time_type ,time_desc ,close_day ,major_item
+                    from h_shop_mstr
+                    where use_yn = 'Y'
+                    order by position ,shop_id 
+            """
             self.params = {}           
-            list = excuteQuery.selectList(self)
+            list = excuteQuery.selectListNew(self)
         except Exception as e :
             print("service err",e)
             return [] 

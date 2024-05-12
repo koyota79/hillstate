@@ -131,6 +131,7 @@ class excuteQuery :
         mapper, xml_raw_text = mybatis_mapper2sql.create_mapper(xml=self.xml)
         sql = mybatis_mapper2sql.get_child_statement(mapper ,self.queryId, reindent=True, strip_comments=False)
         print("excuteQuery")
+        
         result = getConn().selectList(self.params ,sql)
         return result
  
@@ -143,6 +144,12 @@ class excuteQuery :
         mapper, xml_raw_text = mybatis_mapper2sql.create_mapper(xml=self.xml)
         sql = mybatis_mapper2sql.get_child_statement(mapper ,self.queryId, reindent=True, strip_comments=False)
         result = getConn().selectOne(self.params ,sql)
+        return result
+    
+
+
+    def selectListNew(self) :    
+        result = getConn().selectList(self.params ,self.sql)
         return result
 
     # conn_string = "host = 'localhost' dbname = 'hillstate' user = 'hillstate' password = 'hillstate123'"

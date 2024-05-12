@@ -74,7 +74,7 @@
                 imageTag.classList.add('img-load')
                 imageTag.style.width = '350px'
                 imageTag.style.padding = '20px'
-                imageTag.src = require('../assets/images/event/event-loading.gif')
+                imageTag.src = require('../assets/images/event/event-loading_large.gif')
                 div.appendChild(imageTag)
                 img.addEventListener("load", function() {
                     //r_loadingImage.value = false

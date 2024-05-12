@@ -1,6 +1,6 @@
 <template>
 <div class="new-container"></div>
-    <div class="box" >
+    <div class="box">
         <div>
             <img width="350px" height="300px" src = "../assets/images/new/new1.png"/>
         </div>
@@ -26,8 +26,8 @@
     </div> 
 </template>
 
-<script>
-   
+<script setup>
+    
 </script>
 
 <style scoped>

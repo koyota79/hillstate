@@ -18,8 +18,6 @@ def UrlParamMap(func):
         return func(self ,dataObj)
     return innerfunc 
 
-
-
 @mainHome.route('/main')
 class MainHome(Resource):
     def get(self ):    

@@ -30,7 +30,14 @@
             <div class="cont_desc-container">
                 <div class="cont_time">
                         <div>영업시간 : <span class="cont_time_d">{{v_shopDetail.open_time}} - {{v_shopDetail.close_time}}</span></div>
-                        <div>대표전화 : <span class="cont_time_d">{{v_shopDetail.tel_no}}</span></div>
+                        
+                        <div v-if="v_shopDetail.time_type == 'B'">특이사항 : <span class="cont_time_d">{{v_shopDetail.time_desc}}</span></div>
+
+                        <div v-if="v_shopDetail.time_type == 'A'">브레이크 타임 : <span class="cont_time_d">{{r_timeBreak[0] }} ~ {{ r_timeBreak[1]}} </span></div>
+                        <div v-if="v_shopDetail.time_type == 'A'">라스트 오더 : <span class="cont_time_d">{{r_timeBreak[2]}}</span></div>
+
+                        <div>휴무일 : <span class="cont_time_d">{{v_shopDetail.close_day?v_shopDetail.close_day:'없음'}}</span></div>
+                        <div>대표전화 : <span class="cont_time_d">{{v_shopDetail.tel_no}}</span></div> 
                         <div>매장위치 : <span class="cont_time_d">{{v_shopDetail.position}}F</span>
                             <span style="float: right;" @click="fnShopMapMove($event)">
                                 <img width="30px;" :src="require('@/assets/images/icon/pos_marker.jpg')">
@@ -41,13 +48,15 @@
                     {{v_shopDetail.description==null?v_shopDetail.title:v_shopDetail.description}}
                 </div>
 
-                <div class="cont-major">
+                <div class="cont-major" v-if="v_shopDetail.time_type == 'A'">
                     <div>주요 상품</div>
-                    <div class="cont-major-sub">
+
+                    <div class="cont-major-sub" v-for="item in r_majorItem"  >
                         <div class="cont-major-item">
-                            <span >테스트 상품</span><span>11,000 원</span>
+                            <span >{{item.split(':')[0]}}</span><span>{{item.split(':')[1]}} 원</span>
                         </div>
                     </div>
+<!-- 
                     <div class="cont-major-sub">
                         <div class="cont-major-item">
                             <span >테스트 상품111111</span><span>21,000 원</span>
@@ -57,9 +66,10 @@
                         <div class="cont-major-item">
                             <span >테스트22</span><span>131,000 원</span>
                         </div>
-                    </div>
+                    </div> -->
 
                 </div>
+                
             </div>
             <div style="margin-top: 550px;">
             </div>
@@ -80,27 +90,36 @@
     const Axios        = inject('Axios')//구역
     let v_shopDetail   = ref({})
     let r_subSlides    = ref([])
+    let r_timeBreak    = ref([])
+    let r_majorItem    = ref([])
     let r_imgShow      = ref(false)
     let Zone           = inject('Zone')
     let imageSlide     = false
     const route        = useRoute()
     const store        = useStore()
     store.commit('setOverFlow' ,false)
-    
+    const shopObj  = store.state.shopData
     
     const emit = defineEmits(["toggle-loading"]);
     emit('toggle-loading', true);
     onBeforeMount(async () => {
-        fetchData()
+        //fetchData()
+        getFetchData()
         
     })
+    /*
+        1. img_slide_yn 1 컬럼 추가 디폴트 N
+        2. time_type    1  브레이크타임 등등
+        3. time_desc    50 월요일 휴무 수요일 야간진료 등등     "13:00;14:00;21:00" , "매주 수요일 21:00 야간진료"
+        4. close_day   30 매주 월요일   "매주 토,일요일"
+        5. major_item  125          "파스타:12,000;자몽에이드:6,500;파니니:13,500"
+    */
+    function getFetchData(){
+        try{
+            const v_shop_id =  route.params.id
+            const shopInfo = shopObj.find(function(data){ return data[v_shop_id] })[v_shop_id]  
 
-    function fetchData () {
-        let v_shop_id = route.params.id 
-        let p_url   = "/api/shop_info/" + v_shop_id   
-        Axios.get(p_url ,{}).then((response) => {
-            const shopInfo = response.data["shop_detail"]
-            
+            console.log(shopInfo , route.params.id)
             v_shopDetail.value.id              = shopInfo.shop_id
             v_shopDetail.value.title           = shopInfo.shop_nm
             v_shopDetail.value.open_time       = shopInfo.open_time
@@ -108,50 +127,68 @@
             v_shopDetail.value.tel_no          = shopInfo.tel_no
             v_shopDetail.value.position        = shopInfo.position
             v_shopDetail.value.description     = shopInfo.description            
+            v_shopDetail.value.img_slide_yn    = shopInfo.img_slide_yn   
+            v_shopDetail.value.time_type       = shopInfo.time_type   
+            v_shopDetail.value.time_desc       = shopInfo.time_desc  
+            v_shopDetail.value.close_day       = shopInfo.close_day   
             v_shopDetail.value.positionArea    = Zone[shopInfo.position_area]
-            v_shopDetail.value.image           = require("../assets/images/shop/"+ shopInfo.shop_id + "_detail_1.jpg")
+            v_shopDetail.value.image           = ''//require("../assets/images/shop/"+ shopInfo.shop_id + "_detail_1.jpg")
             v_shopDetail.value.markerImage     = require("../assets/images/icon/pos_marker.jpg")
-        }).catch((error) => {
-            console.log(error);
-        }).finally(() => {
+
+            if(shopInfo.time_type =='A'){
+                if(shopInfo.time_desc != undefined ){
+                    r_timeBreak.value = shopInfo.time_desc.split(';')
+                }
+
+                if(shopInfo.major_item != undefined ){
+                    r_majorItem.value = shopInfo.major_item.split(';') 
+                }
+            }
+
+            //console.log(r_timeBreak.value)
+            //이미지 슬라이드가 가능한경우
+            if(shopInfo.img_slide_yn == "Y"){
+                imageSlide = true
+                fnImageSlide(shopInfo)
+            }
+        }catch(e){
+            alert('예외사항 오류.')
+            console.log('err', e)
+        }finally{
             setTimeout(() => {
                 emit('toggle-loading', false);
             },1000)
-        })
-
-        if(v_shop_id ==='2222'){
-            imageSlide = true
-            fnImageSlide(imageSlide)
         }
-
     }
+
+    //매장위치 이동
     const router = useRouter()
     function fnShopMapMove(e){
         router.push({ name: 'MapSearch'  ,params : {id : route.params.shop_id} } )
     }
 
-    function fnImageSlide(isTrue){
-        if(isTrue){
-            r_imgShow.value = true
-            r_subSlides.value.push({
-                 id        : '123' 
-                ,title     : 'test'
-                ,image     : require("../assets/images/shop/2222/2222_1.jpg")
+    //이미지 슬라이드
+    function fnImageSlide(item){
+
+        r_imgShow.value = true
+        r_subSlides.value.push({
+                id     : item.shop_id
+            ,title     : item.shop_nm
+            ,image     : require('../assets/images/shop/' + item.shop_id + '/' + item.shop_id + '_1.jpg')
+        
+        })
+        r_subSlides.value.push({
+                id     : item.shop_id
+            ,title     : item.shop_nm
+            ,image     : require('../assets/images/shop/' + item.shop_id + '/' + item.shop_id + '_2.jpg')
             
-            })
-            r_subSlides.value.push({
-                 id        : '123' 
-                ,title     : 'test'
-                ,image     : require("../assets/images/shop/2222/2222_2.jpg")
-                
-            })
-            r_subSlides.value.push({ 
-                 id        : '123' 
-                ,title     : 'test'
-                ,image     : require("../assets/images/shop/2222/2222_3.jpg")
-                
-            })
-        }
+        })
+        r_subSlides.value.push({ 
+                id     : item.shop_id
+            ,title     : item.shop_nm
+            ,image     : require('../assets/images/shop/' + item.shop_id + '/' + item.shop_id + '_3.jpg')
+        })
+        
        
     }
 
@@ -178,7 +215,7 @@
 
         }
 
-
+        //이미지 슬라이드 네이게이션 스크롤 css
         if(imageSlide){
            const scollbar =  document.getElementsByClassName('swiper-scrollbar')[0]
            scollbar.style.backgroundColor  = '#fff'
