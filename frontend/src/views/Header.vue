@@ -22,6 +22,7 @@
 
   function fnGoMovePage(e) {    
     if(e){
+      e.preventDefault();
       router.push({ path: '/'})
     }
   }
