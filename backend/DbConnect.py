@@ -152,7 +152,7 @@ class excuteQuery :
         result = getConn().selectList(self.params ,self.sql)
         return result
 
-    # conn_string = "host = 'localhost' dbname = 'hillstate' user = 'hillstate' password = 'hillstate123'"
+    # conn_string = 
     # conn = psycopg2.connect(conn_string)
     # cur = conn.cursor()
 
