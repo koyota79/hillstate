@@ -1,8 +1,5 @@
 <template>
     <div class="event"> 
-        <div>
-            <p style="font-weight: bold;font-size: 20px;">이벤트</p>
-        </div>  
         <!-- <div v-for="(item, index) in eventImg"> -->
             <div id="event_images">
                 <!-- <img width="350px" src="../assets/images/shop/no_image.jpg" v-show="r_loadingImage"/> -->
@@ -13,43 +10,58 @@
                     <span></span>
                 </div> -->  
             </div>
-        <!-- </div> -->
-
-
-       
-
-
     </div>
 </template>
   
 <script setup>
-    import {ref, onMounted } from 'vue'
+    import {ref, onMounted ,inject } from 'vue'
     //let r_loadingImage      = ref(true)
     let imageLoadingSize    = 0
     let startImageSize      = 4
-
-
-    const imagesArry = [
-        require('@/assets/images/event/event_1.png'),
-        require('@/assets/images/event/event_2.png'),
-        require('@/assets/images/event/event_3.png'),
-        require('@/assets/images/event/event_4.png'),
-        require('@/assets/images/event/event_5.png'),
-        require('@/assets/images/event/event_1.png'),
-        require('@/assets/images/event/event_2.png'),
-        // require('@/assets/images/event/event_3.png'),
-        // require('@/assets/images/event/event_1.png'),
-        // require('@/assets/images/event/event_2.png'),
-        // require('@/assets/images/event/event_3.png'),
-        // require('@/assets/images/event/event_1.png'),
-        // require('@/assets/images/event/event_2.png'),
-        // require('@/assets/images/event/event_3.png'),   
-    ]
-    //let scrollHeight    = document.body.scrollHeight
-    //let viewScrollSize  = parseInt(totalScrollTop /scrollHeight)
-    
-    //console.log( startImageSize, 'scrollHeight' ,Math.round(13/4) ,'index' ,imageLoadingSize )
+        
     onMounted(() => {
+
+        let imagesArry        = []
+        const $Axios = inject('Axios')
+        $Axios.post('/api/event/list' ,{})
+        .then((response) => {
+            console.log(response.data);
+            const objData       = response.data
+            if(objData.result == 'ERR' ){
+                alert('Result Code ' + objData.code)
+                router.push({ name: 'NotFound' })  
+                return
+            }
+
+            console.log('event:::' , objData)
+    
+        }).catch((error) => {
+            console.log(error);
+        }).finally(() => {
+            // setTimeout(() => {
+            //     emit('toggle-loading', false);
+            // },1000)
+
+            imagesArry = [
+                require('@/assets/images/event/event_1.png'),
+                require('@/assets/images/event/event_2.png'),
+                require('@/assets/images/event/event_3.png'),
+                require('@/assets/images/event/event_4.png'),
+                require('@/assets/images/event/event_5.png'),
+                require('@/assets/images/event/event_1.png'),
+                require('@/assets/images/event/event_2.png'),
+                // require('@/assets/images/event/event_3.png'),
+                // require('@/assets/images/event/event_1.png'),
+                // require('@/assets/images/event/event_2.png'),
+                // require('@/assets/images/event/event_3.png'),
+                // require('@/assets/images/event/event_1.png'),
+                // require('@/assets/images/event/event_2.png'),
+                // require('@/assets/images/event/event_3.png'),   
+            ]
+            fnLoadingImage(startImageSize)
+        })
+
+
         const div = document.getElementById('event_images') 
         window.addEventListener('scroll', function() {
             if ((window.innerHeight + window.scrollY ) + 200 >= document.body.offsetHeight) {
@@ -61,7 +73,6 @@
             }
         });
 
-        
         function fnLoadingImage(size){
             for(let i = imageLoadingSize ; i < (size + imageLoadingSize); i ++){
                 let item = imagesArry[i]
@@ -83,15 +94,12 @@
                     }, 300);
                 
                     imageLoadingSize +=  1 
-             
+                
                 });
             }
         }
-
-        fnLoadingImage(startImageSize)
+        
     })
-
-    
 </script>
 
 <style scoped>
